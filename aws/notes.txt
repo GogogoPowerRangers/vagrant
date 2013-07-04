@@ -39,5 +39,13 @@
 
 4.  Install chef on EC2 host
     See chef-install script
+    # http://www.javacodegeeks.com/2013/04/using-vagrant-aws-with-capistrano.html
 
-# http://www.javacodegeeks.com/2013/04/using-vagrant-aws-with-capistrano.html
+
+Support Files
+
+1.  ITM lite files (downloaded from Amazon S3)
+
+    ITM-lite-6.3.0-2.el6.x86_64.rpm
+
+

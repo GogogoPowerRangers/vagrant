@@ -1,6 +1,7 @@
+Support Files
+
 1.  smai required files
 
-    ITM-lite-6.3.0-2.el6.x86_64.rpm
     SmartCloudMonitoring-ApplicationInsightAgentConsumerVMV1.1.0.1.tar
     SmartCloudMonitoring-ApplicationInsightFabricNodeV1.1.0.1.tar
     Vagrantfile
@@ -11,5 +12,9 @@
     SCM-AI-V1.1.0.1-Readme.txt
     provision
     temp
+
+3.  ITM lite files (downloaded from Amazon S3)
+
+    ITM-lite-6.3.0-2.el6.x86_64.rpm
 
 
