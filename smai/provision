@@ -1,0 +1,65 @@
+#!/bin/sh
+#
+# Licensed Materials - Property of IBM
+#
+# 2013-IBM
+#
+# (C) Copyright IBM Corp. 2013  All Rights Reserved.
+#
+# US Government Users Restricted Rights - Use, duplication or
+# disclosure restricted by GSA ADP Schedule Contract with
+# IBM Corp.
+#
+
+init_vagrant()
+{
+    if [ ! -d /opt/ibm/ccm ] ; then
+        echo "Creates: /opt/ibm/ccm"
+        sudo mkdir -p /opt/ibm/ccm/lib
+    fi
+}
+
+extract()
+{
+    if [ "$1" = "" -o "$2" = "" ] ; then
+        return
+    fi
+
+    top=$1
+    file=$2
+    opt=$3
+
+    dir=`echo $file | sed -e 's#\.tar##'`
+    if [ ! -d /tmp/$dir ] ; then
+        echo "Creates: /tmp/$dir"
+        mkdir /tmp/$dir
+        cd /tmp/$dir
+        tar -xvf $top/$file
+        case "$opt" in
+        *--install* )
+            if [ -f ./install.sh ] ; then
+                sudo ./install.sh
+            fi
+            ;;
+        esac
+    fi
+}
+
+TOP=`pwd`
+
+init_vagrant
+
+echo "Creates: /bin/ksh /usr/bin/rsync"
+sudo yum install ksh rsync compat-libstdc++-33
+
+if [ ! -f /opt/ibm/java-x86_64-70/jre/bin/java ] ; then
+    echo "Creates: /opt/ibm/java-x86_64-70/jre/bin/java"
+    if [ -f ibm-java-x86_64-jre-7.0-4.0.x86_64.rpm ] ; then
+        sudo yum install ibm-java-x86_64-jre-7.0-4.0.x86_64.rpm
+    fi
+fi
+
+extract $TOP SmartCloudMonitoring-ApplicationInsightFabricNodeV1.1.0.1.tar --install
+extract $TOP SmartCloudMonitoring-ApplicationInsightAgentConsumerVMV1.1.0.1.tar --install
+
+#

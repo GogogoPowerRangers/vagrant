@@ -1,0 +1,43 @@
+1.  Confiugre AWS account
+
+    Create IAM user and downloaded the API keys
+    Create SSH keypair from the EC2 management console with name "vagrant"
+    Add port 22 to Security Group Default
+    Save it to ~/.ssh/aws/vagrant.pem, chmod 600 ~/.ssh/aws/vagrant.pem
+    https://518036302541.signin.aws.amazon.com/console
+    Purchase CentOS 6.3 in AWS Marketplace
+
+2.  Vagrant for AWS
+
+    vagrant plugin install vagrant-aws
+    vagrant box add dummy https://github.com/mitchellh/vagrant-aws/raw/master/dummy.box
+    vagrant up --provider=aws
+    Use "Fixups for AWS" if errors occur, vagrant provision
+    vagrant ssh
+    ssh -i ~/.ssh/aws/vagrant.pem root@<instance>
+
+3.  Fixups for AWS
+
+    Error:
+    The following SSH command responded with a non-zero exit status.
+    Vagrant assumes that this means the command failed!
+    
+    mkdir -p '/vagrant'
+
+    Fixup:
+    visudo
+    comment out: #Default requiretty
+
+    Error:
+    No vagrant user
+
+    Fixup:
+    Create vagrant user, group, /home/vagrant, enable wheel group:
+    visudo
+    ## Same thing without a password
+    %wheel  ALL=(ALL)       NOPASSWD: ALL
+
+4.  Install chef on EC2 host
+    See chef-install script
+
+# http://www.javacodegeeks.com/2013/04/using-vagrant-aws-with-capistrano.html

@@ -1,0 +1,7 @@
+{
+  "resolver": {
+    "nameservers": [ "10.0.2.3", "9.0.0.1" ],
+    "search":"ibm.com"
+  },
+  "run_list": [ "recipe[resolver]", "recipe[itmhost]" ]
+}

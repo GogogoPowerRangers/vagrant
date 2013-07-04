@@ -1,0 +1,624 @@
+#!/bin/ksh
+
+# BEGIN: Agent specific logic
+product_defaults () {
+   PRODUCTDESC="Monitoring Agent for Linux OS"
+   PRODUCTCODE=lz
+   PRODUCTSTOPSIG=15
+   PRODUCTSTOPTIMEOUT=15
+   PRODUCTSTARTTIMEOUT=15
+   OSAGENTPC=
+   PRODUCTARCH=
+   TEMAARCH=
+   GSKARCH=
+   GSKLIB=lib
+   JAVAARCH=
+   INSTANCENAME=
+   INSTANCESUFFIX=
+   RUNNINGHOSTNAME=`hostname | cut -f1 -d"."`
+}
+
+process_oparms () {
+    # 1 - The o parameters from itmcmd
+    # e.g.
+    # INSTANCENAME=$1
+    Err_report fail "-o option not implemented for this agent."
+}
+
+process_pparms () {
+    # 1 - The p parameters from itmcmd
+    # e.g.
+    # INSTANCENAME=$1
+    # INSTANCESUFFIX=\_$1
+    Err_report fail "-p option not implemented for this agent."
+}
+
+pre_start () {
+    echo > /dev/null
+}
+
+post_start () {
+    echo > /dev/null
+}
+
+pre_stop () {
+    stop_pas
+}
+
+post_stop () {
+    echo > /dev/null
+}
+# END: Agent specific logic
+
+Err_report() {
+   case $1 in
+      warn) echo "itmcmd warning: $2,continuing ..."
+            sleep 2
+            return
+            ;;		
+      fail) echo "itmcmd failure: $2."
+            exit 2
+            ;;
+      info) echo "itmcmd info   : $2."
+            return
+            ;;
+   esac
+}
+
+Use_report () {
+ echo
+ echo "Launched with bad option from CandleAgent"
+ echo
+ exit 2
+}
+
+stop_pas () {
+    echo "Stopping Watchdog process..."
+    ${CANDLEHOME}/bin/itmcmd execute ${OSAGENTPC} disarmWatchdog.sh > /dev/null 2>&1
+    pasrc=$?
+    if [ ${pasrc} -eq 0 ] ; then
+       echo "Watchdog process was stopped."
+    fi
+    return ${pasrc}
+}
+
+notify_pas () {
+   # 1 - The PAS state, can be stopping, stopped, starting, or started
+   pas_state=$1
+   pas_arg=
+   if [ x${INSTANCENAME} != x ] ; then
+      pas_arg="-o $INSTANCENAME"
+   fi
+   ${CANDLEHOME}/bin/itmcmd execute ${OSAGENTPC} kcapasctrl $pas_state $pas_arg ${PRODUCTCODE} > /dev/null 2>&1
+   return $?
+}
+   
+
+lookup_binarch () {
+  BINARCH=
+  # This function sets PRODUCTARCH, aka ITM_BINARCH
+  # Requires PLATFORMARCH, aka cArch
+  # Requires $2, the product code to find the product arch
+  typeset baseArch name regPath vFile verFile
+
+  regPath=$CANDLEHOME/registry
+  verFile=$(grep -l "^runArch *= *$1 *$" $regPath/${2}*.ver 2> /dev/null)
+
+  # If the runArch could not be found in a .ver file, then look for the record
+  # "runArch = open" in the .ver file for the latest version of the product.
+  # The "open" field is used for OS toleration.
+
+  if [ -n "$verFile" ]  # Found it.
+  then
+    verName=${verFile##*/}  # Remove the pathname.
+  else  # OS toleration.
+    baseArch=${1%%[0-9]*}  # Remove the version and release numbers.
+
+    # Get the names of all .ver files for the product on this baseArch. 
+    # names will be sorted by default, so the last name is the right one.
+
+    for name in $(ls $regPath/$2${baseArch}*.ver 2> /dev/null)
+    do
+      verName=${name##*/}  # Remove the pathname.
+    done
+
+    grep "^runArch *= *open" $regPath/$verName > /dev/null 2>&1
+    if [ ! $? -eq 0 ] ; then
+       return
+    fi
+  fi
+
+  # Get the bin arch from the .ver file name
+  BINARCH=${verName%.ver}  # Remove the extension.
+  BINARCH=${BINARCH#$2}    # Remove the product code.
+}
+
+
+set_RunInfo () {
+  # 1 - PID of the running agent
+  if [ ! -d `dirname ${RUNINFO}` ] ; then
+     mkdir -p `dirname ${RUNINFO}`
+  fi
+  if [ x${INSTANCENAME} = x ] ; then
+     INSTANCELABEL="None"
+  else
+     INSTANCELABEL=${INSTANCENAME}
+  fi
+  if [ ! -f ${RUNINFO} ]
+  then
+     echo "FIELDSEP=|" > ${RUNINFO}
+     echo "${RUNNINGHOSTNAME}|${PRODUCTCODE}|${1}|${INSTANCELABEL}|${PLATFORMARCH}|" >> ${RUNINFO}
+  else
+     clear_RunInfo
+     echo "${RUNNINGHOSTNAME}|${PRODUCTCODE}|${1}|${INSTANCELABEL}|${PLATFORMARCH}|" >> ${RUNINFO}
+  fi 
+}
+
+get_RunInfo () { 
+  if [ -f ${RUNINFO} ] ; then
+     if [ x${INSTANCENAME} = x ] ; then
+        awk -F'|' '/\|'${PRODUCTCODE}'\|.*\|None\|'${PLATFORMARCH}'\|/ { print $3 }' ${RUNINFO}
+     else
+        awk -F'|' '/\|'${PRODUCTCODE}'\|.*\|'${INSTANCENAME}'\|'${PLATFORMARCH}'\|/ { print $3 }' ${RUNINFO}
+     fi
+  fi
+}
+
+clear_RunInfo () {
+  # 1 - PID
+  if [ -f ${RUNINFO} ] ; then
+     if [ x${1} = x ] ; then
+        if [ x${INSTANCENAME} = x ] ; then
+           SEARCH=^.*\|${PRODUCTCODE}\|.*\|None\|.*$
+        else
+            SEARCH=^.*\|${PRODUCTCODE}\|.*\|${INSTANCENAME}\|.*$
+        fi
+     else
+        SEARCH=^.*\|${PRODUCTCODE}\|${1}\|.*$
+     fi
+     TMPFILE=${RUNINFO}.tmp
+     sed '/'${SEARCH}'/d' ${RUNINFO} > ${TMPFILE}
+     if [ $? = 0 ] ; then
+        mv ${TMPFILE} ${RUNINFO}
+     fi
+  fi
+}
+
+test_pid () {
+  # 1 - PID to be tested
+  # 2 - STOP OR START type of action being preformed by the user.
+  # if we don't get a PID and the type of action, we assume there was no PID
+  # in the RunInfo file or one generated and return 1
+  # Exits with a 0 if this process exists and is the expect ITM process, 1 if not.
+
+   MYPID=$1
+   MYACTIONTYPE=$2
+
+   if [ x${MYACTIONTYPE} = x ]
+   then
+     # No PID and Action type, assume no PID = not running.
+     return 1
+   fi
+
+   # Check to see if the product is actually running.
+   ps -fp ${MYPID} >>/dev/null 2>&1
+   if [ $? -ne 0 ]
+   then
+      if [ ${MYACTIONTYPE} = START ]
+      then
+         # Retry once to see if the product is actually running.
+         sleep ${PIDCHECKTIMEOUT}
+         ps -fp ${MYPID} >>/dev/null 2>&1
+         if [ $? -ne 0 ]
+         then
+            #echo Could not find PID=$MYPID
+            return 1
+         fi
+      else
+         #For stop commands, we assume at this point, the pid is not active.
+         #echo Could not find PID=$MYPID
+         return 1
+      fi
+   fi
+
+   #echo Found PID=$MYPID
+   if [ -r ${STARTSCRIPT} ]
+   then
+      # Make sure this PID maps to the agent we are trying to stop or start.
+      COMMAND=`grep "export COMMAND=" $STARTSCRIPT | cut -d "=" -f2 | sed "s/\"//g"`
+      EXPECTED_COMMAND=${CANDLEHOME}/${PRODUCTARCH}/${PRODUCTCODE}/bin/${COMMAND}
+      #echo ${EXPECTED_COMMAND}
+
+      testticks=0
+      while [ ${testticks} -ne ${PRODUCTSTARTTIMEOUT} ]
+      do
+         sleep 1
+
+         PS_COMMAND=`ps -p ${MYPID} -o args | tail -n +2 2>/dev/null`
+         #echo ${PS_COMMAND}
+         if [ x${EXPECTED_COMMAND} = x${PS_COMMAND} ]
+         then
+            #echo Found matching command
+            return 0
+         else
+            if [ ${MYACTIONTYPE} = START ]
+            then
+               # The output from the ps command did not match. On systems with heavy load
+               # the ps output may takes some extra time to be updated by the operating
+               # system. Loop and retry again.
+               testticks=`expr ${testticks} + 1`
+            else
+               return 1
+            fi
+         fi
+      done
+
+      # If we get to this point, the ps output still isn't matching, so we will assume the pid is
+      # owned by another process. We will remove it from RunInfo.
+      clear_RunInfo ${MYPID}
+      return 1
+   else
+      #if there is no start script, the agent was not started using this script.
+      #echo Could not find ${STARTSCRIPT}, aborting.
+      return 1
+   fi
+}
+
+
+test_instance () {
+  if [ x${INSTANCENAME} != x ] ; then
+     if [ ! -f ${CANDLEHOME}/config/${PRODUCTCODE}\_${INSTANCENAME}.environment ] ; then
+        Err_report fail "The instance \"${INSTANCENAME}\" is not configured for this agent."
+     fi
+  fi
+}
+  
+
+build_env_script () {
+    # 1 - Fully qualified name of the env script to build
+    # Build a generic agent environment that can be sourced or added to
+
+    # Temp file needed for sed
+    if [ ! -d ${CANDLEHOME}/tmp ] ; then
+       mkdir ${CANDLEHOME}/tmp
+    fi
+    if [ x${INSTANCENAME} = x ] ; then
+       TMPSCRIPT=${CANDLEHOME}/tmp/${PRODUCTCODE}.env
+    else
+       TMPSCRIPT=${CANDLEHOME}/tmp/${PRODUCTCODE}_${INSTANCENAME}.env
+    fi
+    export TMPSCRIPT
+    
+    # lookup this agents binarch 
+    lookup_binarch ${PLATFORMARCH} ${PRODUCTCODE}
+    PRODUCTARCH=$BINARCH 
+    # lookup the tema binarch
+    lookup_binarch ${PLATFORMARCH} ax
+    TEMAARCH=$BINARCH
+    # lookup the gskit binarch
+    lookup_binarch ${PLATFORMARCH} gs
+    GSKARCH=$BINARCH
+    if [[ $GSKARCH = @(*6) ]] ; then
+       GSKLIB=lib64
+    fi
+    # lookup the java binarch
+    lookup_binarch ${PLATFORMARCH} jr
+    JAVAARCH=$BINARCH
+
+    echo "#!/bin/ksh" > ${TMPSCRIPT}
+    echo "# ------------ Root environment variables ----------------" >> ${TMPSCRIPT}
+    echo "CANDLEHOME=${CANDLEHOME}" >> ${TMPSCRIPT}
+    echo "PRODUCTCODE=${PRODUCTCODE}" >> ${TMPSCRIPT}
+    echo "PRODUCTARCH=${PRODUCTARCH}" >> ${TMPSCRIPT}
+    echo "OSAGENTPC=${OSAGENTPC}" >> ${TMPSCRIPT}
+    echo "TEMAARCH=${TEMAARCH}" >> ${TMPSCRIPT}
+    echo "GSKARCH=${GSKARCH}" >> ${TMPSCRIPT}
+    echo "GSKLIB=${GSKLIB}" >> ${TMPSCRIPT}
+    echo "JAVAARCH=${JAVAARCH}" >> ${TMPSCRIPT}
+    echo "RUNNINGHOSTNAME=${RUNNINGHOSTNAME}" >> ${TMPSCRIPT}
+
+    if [ x${INSTANCENAME} != x ] ; then
+       echo "INSTANCENAME=${INSTANCENAME}" >> ${TMPSCRIPT}
+    fi
+    if [ x${INSTANCESUFFIX} != x ] ; then
+       echo "INSTANCESUFFIX=${INSTANCESUFFIX}" >> ${TMPSCRIPT}
+    fi
+   
+    # Add the global environment (no customizations here)
+    echo "# ------------ Default global environment variables ----------------" >> ${TMPSCRIPT}
+    if [ -f ${CANDLEHOME}/config/.global.environment ] ; then
+       cat ${CANDLEHOME}/config/.global.environment >> ${TMPSCRIPT}
+    fi
+    # Add base product environment (no customizations here)
+    echo "# ------------ Default ${PRODUCTCODE} environment variables ----------------" >> ${TMPSCRIPT}
+    if [ -f ${CANDLEHOME}/config/.${PRODUCTCODE}.environment ] ; then
+       cat ${CANDLEHOME}/config/.${PRODUCTCODE}.environment >> ${TMPSCRIPT}
+    fi
+    # Add global user customizations
+    echo "# ------------ Global level user overrides ----------------" >> ${TMPSCRIPT}
+    if [ -f ${CANDLEHOME}/config/global.environment ] ; then
+       cat ${CANDLEHOME}/config/global.environment >> ${TMPSCRIPT}
+    fi
+    # Add product user customizations
+    echo "# ------------ Product level user overrides ----------------" >> ${TMPSCRIPT}
+    if [ -f ${CANDLEHOME}/config/${PRODUCTCODE}.environment ] ; then
+       cat ${CANDLEHOME}/config/${PRODUCTCODE}.environment >> ${TMPSCRIPT}
+    fi 
+    # Add instance user customizations
+    echo "# ------------ Instance level user overides ----------------" >> ${TMPSCRIPT}
+    if [ -f ${CANDLEHOME}/config/${PRODUCTCODE}_${INSTANCENAME}.environment ] ; then
+       cat ${CANDLEHOME}/config/${PRODUCTCODE}_${INSTANCENAME}.environment >> ${TMPSCRIPT}
+    fi
+
+    # Add export to the variables
+    sed 's/^[A-Z].*$/export &/' ${TMPSCRIPT} | sed 's/=\(.*\)/="\1"/' > ${1}
+    chmod 755 ${1}
+    rm -f ${TMPSCRIPT}
+}
+
+build_start_script () {
+    # 1 - Fully qualified name of the run script to build
+
+    # We'll build the environment script then hijack it for agent startup
+    build_env_script ${1}
+
+    # Steal the environment script for our bidding
+    echo "# ------------ Run commands ----------------" >> ${1}
+
+    # Derive the startup log file name
+    if [ x${INSTANCENAME} = x ] ; then
+       STARTLOG=\${CANDLEHOME}/logs/\${CTIRA_HOSTNAME}\_${PRODUCTCODE}\_start.log 
+    else
+       STARTLOG=\${CANDLEHOME}/logs/\${CTIRA_HOSTNAME}\_${PRODUCTCODE}\_${INSTANCENAME}\_start.log
+    fi
+    
+    echo "echo \"Running : \$COMMAND\" > ${STARTLOG} 2>&1" >> ${1}
+    echo "date >> ${STARTLOG} 2>&1" >> ${1}
+    echo "env >> ${STARTLOG} 2>&1" >> ${1}
+    echo "if [ x\${COMMANDPATH} = x ] ; then" >> ${1}
+    echo "   ${CANDLEHOME}/${PRODUCTARCH}/${PRODUCTCODE}/bin/\${COMMAND} >> ${STARTLOG} 2>&1 &" >> ${1}
+    echo "else" >> ${1}
+    echo "   \${COMMANDPATH}/\${COMMAND} >> ${STARTLOG} 2>&1 &" >> ${1}
+    echo "fi" >> ${1}
+    echo "echo \$!" >> ${1}
+}
+
+build_execute_script() {
+    # 1 - Fully qualified name of the run script to build
+
+    # Derive the startup log file name
+    STARTLOG=${CANDLEHOME}/logs/\${CTIRA_HOSTNAME}\_${PRODUCTCODE}\_execute.log
+  
+    echo "#!/bin/ksh" > ${1}
+    echo ". ${ENVSCRIPT}" >> ${1}
+    echo "rm -f ${CANDLEHOME}/logs/*\_${PRODUCTCODE}\_execute\_*.log" >> ${1}
+    echo "echo \"Running : ${CMD}\" >> ${STARTLOG}" >> ${1}
+    echo "date >> ${STARTLOG}" >> ${1}
+    echo "env >> ${STARTLOG}" >> ${1}
+    #echo "${CMD} >> ${STARTLOG}" >> ${1}
+    echo "${CMD}" >> ${1}
+
+    chmod 755 ${1}
+}
+
+
+Agent_start () {
+
+   lookup_binarch ${PLATFORMARCH} ${PRODUCTCODE}
+   PRODUCTARCH=$BINARCH
+
+   # Validate instance
+   test_instance
+
+   # Check if we are running already
+   if [ -f ${RUNINFO} ] ; then
+      test_pid `get_RunInfo` START
+      if [ $? = 0 ] ; then
+         Err_report info "The \"${PRODUCTDESC}\" is already running"
+         exit 0
+      fi
+   fi
+
+   # Houston we have liftoff
+   echo "Starting the ${PRODUCTDESC}..."
+
+   # Build the transient launch script
+   build_start_script ${STARTSCRIPT}
+    
+   # Run the pre_start callpoint
+   pre_start
+
+   # Launch the agent, it should only return the 
+   AGENTPID=`${STARTSCRIPT}`
+
+   # On systems with a heavy load, it may take a few seconds before the
+   # output from the "ps" command gets updated by the OS. Therefore,
+   # we wait here for short time while the information is updated.
+   sleep ${PIDCHECKTIMEOUT}
+
+   # Check that it stayed up
+   test_pid ${AGENTPID} START
+   if [ $? = 0 ] ; then
+      set_RunInfo ${AGENTPID}
+      # Run the post start callpoint
+      post_start
+      #rm -f ${STARTSCRIPT}
+      echo "${PRODUCTDESC} started"
+   else
+      Err_report fail "Agent failed to start.  Check the agent start log."
+   fi
+
+   exit 0
+}
+
+Agent_stop () {
+
+ lookup_binarch ${PLATFORMARCH} ${PRODUCTCODE}
+ PRODUCTARCH=$BINARCH
+
+ # Validate instance
+ test_instance
+ 
+ if [ -f ${RUNINFO} ] ; then
+    AGENTPID=`get_RunInfo`
+    test_pid ${AGENTPID} STOP
+    if [ $? -ne 0 ] ; then
+       Err_report info "The ${PRODUCTDESC} is not running"
+       clear_RunInfo ${AGENTPID}
+       exit 0
+    fi
+
+    # Call custom pre stop code
+    pre_stop
+
+    echo "Stopping ${PRODUCTDESC} ..."
+    
+    # Send the kill signal and wait up to the timeout
+    kill -${PRODUCTSTOPSIG} ${AGENTPID} > /dev/null 2>&1
+
+    ticks=0
+    while [ ${ticks} -ne ${PRODUCTSTOPTIMEOUT} ]
+    do
+       sleep 1
+       test_pid ${AGENTPID} STOP
+       if [ $? -ne 0 ] ; then
+          echo "Product ${PRODUCTDESC} was stopped gracefully."
+          echo "Agent stopped."
+          clear_RunInfo ${AGENTPID}
+          # Run the post_stop callpoint
+          post_stop
+          exit 0
+       fi
+       ticks=`expr ${ticks} + 1`
+    done
+
+    # Check the force option
+    if [ x${forceopt} = xy ] ; then
+
+       # Send the kill -9, and wait the timeout again
+       kill -9 ${AGENTPID} > /dev/null 2>&1
+
+       ticks=0
+       while [ ${ticks} -ne ${PRODUCTSTOPTIMEOUT} ]
+       do
+          test_pid ${AGENTPID} STOP
+          if [ $? -ne 0 ] ; then
+             echo "Product ${PRODUCTDESC} was stopped with force."
+             echo "Agent stopped."
+             clear_RunInfo ${AGENTPID}
+             # Run the post_stop callpoint
+             post_stop
+             exit 0
+          fi
+          sleep 1
+          ticks=`expr ${ticks} + 1`
+       done
+    else
+       echo "Product ${PRODUCTCODE} was not stopped. You can use option -f to force stop product ${PRODUCTCODE}."
+       echo "Using this option you may lose/corrupt data! See help for more information."
+    fi
+
+    echo "KCIIN0205E Unable to stop agent or process..."
+
+    # Dump the PID for user intervention if force failed
+    if [ x${forceopt} = xy ] ; then
+       echo "KCIIN2114E PID: \"${AGENTPID}\""
+    fi
+
+    exit 2
+
+ else   
+    Err_report info "The ${PRODUCTDESC} is not running"
+    exit 0
+ fi
+}
+
+Agent_execute () {
+   # The CandleAgent script wants two scripts so the current shell can be sourced
+   build_env_script $ENVSCRIPT
+   build_execute_script $EXECUTESCRIPT
+   exit 0
+}
+
+#==========================================================================
+#
+# main
+#
+#==========================================================================
+
+product_defaults
+PIDCHECKTIMEOUT=2
+
+until [ -z "$1" ]
+  do
+    AGENTCMD=$1
+    case "$1" in
+        -ch)      CANDLEHOME=$2
+                  RUNINFO=${CANDLEHOME}/config/.ConfigData/RunInfo
+                  CONFIGINFO=${CANDLEHOME}/config/.ConfigData/ConfigInfo
+                  shift
+                  ;;
+        -batch)   batchopt=y
+                  Err_report info "Batch option not yet implemented for this agent."
+                  ;;
+        -l)       logopt=y
+                  Err_report info "Log option not yet implemented for this agent."
+                  ;;
+        -n)       nopidcheck=y
+                  Err_report info "No PID check option not yet implemented for this agent."
+                  ;;
+        -c)       configopt=y
+                  Err_report info "No config option not yet implemented for this agent."
+                  ;;
+        -m)       multiopt=y
+                  Err_report info "Multi option not yet implemented for this agent."
+                  ;;
+        -f)       forceopt=y
+                  ;;
+        -o)       process_oparms $2
+                  shift
+                  ;;
+        -p)       process_pparms $2
+                  shift
+                  ;;
+        -a)       PLATFORMARCH=$2
+                  if [ `echo $2 | cut -c 1` = l ] ; then
+                     OSAGENTPC=lz
+                  else
+                     OSAGENTPC=ux
+                  fi
+                  shift
+                  ;;
+        execute)  PRODUCTCODE=$2
+                  EXECUTESCRIPT=${CANDLEHOME}/config/${PRODUCTCODE}.sh
+                  ENVSCRIPT=${CANDLEHOME}/config/${PRODUCTCODE}.env
+                  shift
+                  shift
+                  CMD=$@
+                  Agent_execute
+                  exit 0
+                  ;;
+        start)    PRODUCTCODE=$2
+                  if [ x$INSTANCENAME = x ] ; then
+                     STARTSCRIPT=${CANDLEHOME}/config/${PRODUCTCODE}.run
+                  else
+                     STARTSCRIPT=${CANDLEHOME}/config/${PRODUCTCODE}\_${INSTANCENAME}.run
+                  fi
+                  Agent_start
+                  exit 0
+                  ;;      
+        stop)     PRODUCTCODE=$2
+                  if [ x$INSTANCENAME = x ] ; then
+                     STARTSCRIPT=${CANDLEHOME}/config/${PRODUCTCODE}.run
+                  else
+                     STARTSCRIPT=${CANDLEHOME}/config/${PRODUCTCODE}\_${INSTANCENAME}.run
+                  fi
+                  Agent_stop
+                  exit 0
+                  ;;
+        *)        Use_report
+                  ;;
+    esac
+   shift
+done
+
