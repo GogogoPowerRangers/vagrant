@@ -1,0 +1,16 @@
+Install RVM
+
+1.  curl -L https://get.rvm.io | bash
+
+Install Ruby 1.9.3
+
+1.  rvm install 1.9.3 --with-gcc=clang
+
+
+Install Vagrant Windows gems
+
+1.  gem install vagrant-windows
+
+2.  gem install em-winrm
+
+
