@@ -3,3 +3,6 @@ export AWS_SECRET_ACCESS_KEY="rN2zft4bhgWNKXmnpKerertcTSyNgLHob6yJ8P7F"
 export AWS_KEYPAIR_NAME="vagrant"
 export AWS_SSH_PRIVATE_KEY_PATH="~/.ssh/aws/vagrant.pem"
 export AWS_AMI="ami-a96b01c0"
+if [ "$LOGNAME" = "" -a ! "$USERNAME" = "" ] ; then
+    export LOGNAME=$USERNAME
+fi

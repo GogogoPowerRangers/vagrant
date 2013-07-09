@@ -4,3 +4,4 @@
 *.rpm
 *.tar
 *.zip
+vagrant-aws

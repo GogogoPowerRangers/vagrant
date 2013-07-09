@@ -41,6 +41,9 @@
     See chef-install script
     # http://www.javacodegeeks.com/2013/04/using-vagrant-aws-with-capistrano.html
 
+5.  [Windows Ruby only]
+    AWS rsync patch for .vagrant.d/gems/gems/vagrant-aws-0.2.2/lib/vagrant-aws/action/sync_folders.rb
+
 
 Support Files
 
