@@ -5,3 +5,4 @@
 *.tar
 *.zip
 vagrant-aws
+boxes
