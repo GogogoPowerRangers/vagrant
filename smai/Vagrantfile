@@ -10,6 +10,7 @@ Vagrant.configure("2") do |config|
   config.vm.box = "itmhost"
   config.vm.hostname = "ccm" + ENV['HOSTNAME']
   config.vm.network :forwarded_port, guest: 10001, host: 10001
+  config.vm.network :forwarded_port, guest: 51920, host: 51920
 
   # The url from where the 'config.vm.box' box will be fetched if it
   # doesn't already exist on the user's system.
