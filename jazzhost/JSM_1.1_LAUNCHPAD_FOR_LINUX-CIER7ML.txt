@@ -1,0 +1,20 @@
+Jazz for Service Management V1.1 for Linux Multilingual (Launchpad, PRS, Jazz Repository, TDI) (CIER7ML) - View details
+Size	1,106mb
+Date posted	08-Mar-2013
+
+Provision
+
+Download installation images
+==> JSM_1.1_LAUNCHPAD_FOR_LINUX.zip
+==> WAS_V8.5.0.1_FOR_JAZZSM_LINUX_ML.zip
+
+Extract installation files
+==> mkdir /vagrant/tmp
+==> cd /vagrant/tmp
+==> unzip /vagrant/JSM_1.1_LAUNCHPAD_FOR_LINUX.zip
+==> unzip /vagrant/WAS_V8.5.0.1_FOR_JAZZSM_LINUX_ML.zip
+
+Install WebSphere and Jazz Service Management
+==> cd /vagrant/tmp/im.linux.x86_64
+==> ./userinstc -acceptLicense -dataLocation /tmp/silent-install/data -silent -showVerboseProgress -nosplash -input /vagrant/itmhost-install_jazzsm_was_libertyprofile_response.xml 
+

@@ -1,0 +1,437 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- 
+ /********************************************************** {COPYRIGHT-TOP} ****
+ * IBM Confidential
+ * Jazz for Service Management - Install
+ *
+ * (C) Copyright IBM Corp. 2013  All Rights Reserved.
+ *
+ * The source code for this program is not published or otherwise  
+ * divested of its trade secrets, irrespective of what has been 
+ * deposited with the U.S. Copyright Office.
+ ********************************************************** {COPYRIGHT-END} ***/ 
+-->
+
+<!--The "acceptLicense" attribute has been deprecated. Use "-acceptLicense" command line option to accept license agreements.-->
+<agent-input acceptLicense='true'>
+
+<!-- ######################################################################
+All repositories are listed here.
+A repository can be either a local location or a live repository.
+
+If you have a local repository, replace the appropriate value below.
+You do not need to remove the repository from this section if you decide not to install 
+that product.
+############################################################################--> 
+<server>
+<repository location='/vagrant/tmp/JazzSMRepository/disk1' temporary="true"/>
+<repository location='/vagrant/tmp/WASRepository/disk1' temporary="true"/>
+</server>
+
+<!-- #########################################################################################
+IBM Installation Manager package group details for installing WebSphere Application Server
+##############################################################################################-->
+<profile id='IBM WebSphere Application Server V8.5' installLocation='/opt/IBM/WebSphere/AppServer'>
+<data key='eclipseLocation' value='/opt/IBM/WebSphere/AppServer'/>
+<data key='user.import.profile' value='false'/>
+<data key='cic.selector.os' value='linux'/>
+<data key='cic.selector.arch' value='x86'/>
+<data key='cic.selector.ws' value='gtk'/>
+<data key='cic.selector.nl' value='en'/>
+</profile>
+
+<!-- #########################################################################################
+WebSphere Application Server, extension and JazzSM offerings that will be installed
+##############################################################################################-->
+
+<install modify='false'>
+
+<!-- WebSphere Application Server offering with Liberty profile selected for installation -->
+<offering id='com.ibm.websphere.BASE.v85' profile='IBM WebSphere Application Server V8.5' features='core.feature,ejbdeploy,thinclient,embeddablecontainer,com.ibm.sdk.6_64bit,liberty' installFixes='none'/>
+
+<!-- WebSphere Application Server JDK 7.0 offering selected for installation -->
+<offering id='com.ibm.websphere.IBMJAVA.v70' profile='IBM WebSphere Application Server V8.5' features='com.ibm.sdk.7' installFixes='none'/>
+
+<!-- JazzSM extension for WebSphere Application Server offering selected for installation -->
+<offering id='com.ibm.tivoli.tacct.psc.install.was85.extension' profile='IBM WebSphere Application Server V8.5' features='main.feature' installFixes='none'/>
+
+<!-- Registry Services offering selected for installation -->
+<offering id='com.ibm.tivoli.tacct.psc.install.server' profile='Core services in Jazz for Service Management' features='com.ibm.tivoli.tacct.psc.install.server.feature.config.files,com.ibm.tivoli.tacct.psc.frs.install.ant.wrapper.feature,com.ibm.tivoli.tacct.psc.install.server.feature.common,com.ibm.tivoli.tacct.psc.install.server.feature.schema.install,com.ibm.tivoli.tacct.psc.install.server.feature.schema.config,com.ibm.tivoli.tacct.psc.install.server.feature.application.install,com.ibm.tivoli.tacct.psc.install.server.feature.application.config' installFixes='none'/>
+
+<!-- Administration Services offering with Liberty profile selected for installation -->
+<offering id='com.ibm.tivoli.tacct.psc.install.admin.server' profile='Core services in Jazz for Service Management' features='com.ibm.tivoli.tacct.psc.install.server.feature.config.files,com.ibm.tivoli.tacct.psc.fas.install.ant.wrapper.feature,com.ibm.tivoli.tacct.psc.install.server.feature.admin.install,com.ibm.tivoli.tacct.psc.install.server.feature.admin.liberty.config' installFixes='none'/>
+
+<!-- Security Services offering selected for installation -->
+<offering id='com.ibm.tivoli.tacct.psc.install.ess.service' profile='Core services in Jazz for Service Management' features='com.ibm.tivoli.tacct.psc.install.server.feature.config.files,com.ibm.tivoli.tacct.psc.ess.install.ant.wrapper.feature,com.ibm.tivoli.tacct.psc.install.feature.ess.install,com.ibm.tivoli.tacct.psc.install.feature.ess.config' installFixes='none'/>
+
+<!-- IBM Dashboard Application Services offering selected for installation -->
+<offering id='com.ibm.tivoli.tacct.psc.tip.install' profile='Core services in Jazz for Service Management' features='com.ibm.tivoli.tacct.psc.install.server.feature.tip.install,com.ibm.tivoli.tacct.psc.install.server.feature.tip.config' installFixes='none'/>
+
+<!-- Administration Services UI offering selected for installation -->
+<offering id='com.ibm.tivoli.tacct.psc.install.admin.ui' profile='Core services in Jazz for Service Management' features='com.ibm.tivoli.tacct.psc.install.server.feature.config.files,com.ibm.tivoli.tacct.psc.install.feature.admin.ui.install,com.ibm.tivoli.tacct.psc.install.feature.admin.ui.config' installFixes='none'/>
+
+</install>
+
+<!-- #########################################################################################
+IBM Installation Manager package group details for installing JazzSM services
+##############################################################################################-->
+<profile id='Core services in Jazz for Service Management' installLocation='/opt/IBM/JazzSM'>
+<!-- Data key 'eclipseLocation'
+Purpose			- Used for JazzSM install location
+Default value   - /opt/IBM/JazzSM
+Valid values    - Any directory location which has write permission -->
+<data key='eclipseLocation' value='/opt/IBM/JazzSM'/>
+<data key='user.import.profile' value='false'/>
+<data key='cic.selector.os' value='linux'/>
+<data key='cic.selector.arch' value='x86_64'/>
+<data key='cic.selector.ws' value='gtk'/>
+
+<!-- Data key 'user.FRS_HTTPS_PORT'
+Purpose			- HTTPS transport secure port for Registry Services if remote host is selected, if Registry services is installed on the same machine then this value can be left empty.
+Default value   - Empty value
+Valid values    - A port number must be an integer in the range [1..65535] -->
+<data key='user.FRS_HTTPS_PORT,com.ibm.tivoli.tacct.psc.install.admin.server' value=''/>
+
+<!-- Data key 'user.FRS_APP_NAME'
+Purpose			- Registry Services application name.
+Default value   - oslc
+Valid values    - oslc -->
+<data key='user.FRS_APP_NAME,com.ibm.tivoli.tacct.psc.install.admin.server' value='oslc'/>
+
+<!-- Data key 'user.FRS_HOSTNAME'
+Purpose			- Hostname of machine where Registry Services is already installed or selected to installed.
+Default value   - localhost -->
+<data key='user.FRS_HOSTNAME,com.ibm.tivoli.tacct.psc.install.admin.server' value='localhost'/>
+
+<!-- Data key 'user.FAS_HOSTNAME'
+Purpose			- Hostname of the local machine where Administration Services will be installed. It must be hostname of local machine.
+Default value   - localhost -->
+<data key='user.FAS_HOSTNAME,com.ibm.tivoli.tacct.psc.install.admin.server' value='localhost'/>
+
+<!-- Data key 'user.FRS_HTTPS_PORT'
+Purpose			- HTTPS transport secure port for Registry Services if remote host is selected, if Registry Services is installed on the same machine then this value can be left empty.
+Default value   - Empty value
+Valid values    - A port number must be an integer in the range [1..65535] -->
+<data key='user.FRS_HTTPS_PORT,com.ibm.tivoli.tacct.psc.install.admin.ui' value=''/>
+
+<!-- Data key 'user.FRS_APP_NAME'
+Purpose			- Registry Services application name.
+Default value   - oslc
+Valid values    - oslc -->
+<data key='user.FRS_APP_NAME,com.ibm.tivoli.tacct.psc.install.admin.ui' value='oslc'/>
+
+<!-- Data key 'user.FRS_HOSTNAME'
+Purpose			- Hostname of machine where Registry Services is already installed or selected to installed.
+Default value   - localhost -->
+<data key='user.FRS_HOSTNAME,com.ibm.tivoli.tacct.psc.install.admin.ui' value='localhost'/>
+
+<!-- Data key 'user.BOOTSTRAP_ADDRESS'
+Purpose			- Specifies the bootstrap port number for WebSphere Application Server.
+Default value   - 16312
+Valid values    - A port number must be an integer in the range [1..65535] -->
+<data key='user.BOOTSTRAP_ADDRESS' value='16312'/>
+
+<!-- Data key 'user.WC_adminhost'
+Purpose			- Administration port number is used when accessing the WebSphere Application Server administration console.
+Default value   - 16315
+Valid values    - A port number must be an integer in the range [1..65535]-->
+<data key='user.WC_adminhost' value='16315'/>
+
+<!-- Data key 'user.ORB_LISTENER_ADDRESS'
+Purpose			- The Object Request Broker (ORB) on WebSphere Application Server uses a listener port for Remote Method Invocation over the Internet Inter-ORB Protocol (RMI/IIOP) communications, and is statically specified using configuration dialogs or during migration. If you are working with a firewall, you must specify a static port for the ORB listener and open that port on the firewall so that communication can pass through the specified port. The endPoint property for setting the ORB listener port is: ORB_LISTENER_ADDRESS. 
+Default value   - 16320
+Valid values    - A port number must be an integer in the range [1..65535]-->
+<data key='user.ORB_LISTENER_ADDRESS' value='16320'/>
+
+<!-- Data key 'user.CSIV2_SSL_MUTUALAUTH_LISTENER_ADDRESS'
+Purpose			- (Common Secure Interoperability Specification, Version 2)CSIv2 Client Authentication SSL Port.
+Default value   - 16322
+Valid values    - A port number must be an integer in the range [1..65535]-->
+<data key='user.CSIV2_SSL_MUTUALAUTH_LISTENER_ADDRESS' value='16322'/>
+
+<!-- Data key 'user.SAS_SSL_SERVERAUTH_LISTENER_ADDRESS'
+Purpose			- Secure Association Services (SAS) SSL server authentication port.
+Default value   - 16321
+Valid values    - A port number must be an integer in the range [1..65535]-->
+<data key='user.SAS_SSL_SERVERAUTH_LISTENER_ADDRESS' value='16321'/>
+
+<!-- Data key 'user.REST_NOTIFICATION_PORT'
+Purpose			- Representational State Transfer (REST) notification port.
+Default value   - 16324
+Valid values    - A port number must be an integer in the range [1..65535]-->
+<data key='user.REST_NOTIFICATION_PORT' value='16324'/>
+
+<!-- Data key 'user.WC_adminhost_secure'
+Purpose			- Administrative Console Secure Port is used when accessing the WebSphere Application Server administration console if security is enabled.
+Default value   - 16316
+Valid values    - A port number must be an integer in the range [1..65535]-->
+<data key='user.WC_adminhost_secure' value='16316'/>
+
+<!-- Data key 'user.SOAP_CONNECTOR_ADDRESS'
+Purpose			- SOAP connection port for WebSphere Application Server.
+Default value   - 16313
+Valid values    - A port number must be an integer in the range [1..65535]-->
+<data key='user.SOAP_CONNECTOR_ADDRESS' value='16313'/>
+
+<!-- Data key 'user.DCS_UNICAST_ADDRESS'
+Purpose			- High Availability Manager Communication Port for WebSphere Application Server.
+Default value   - 16318
+Valid values    - A port number must be an integer in the range [1..65535]-->
+<data key='user.DCS_UNICAST_ADDRESS' value='16318'/>
+
+<!-- Data key 'user.WC_defaulthost'
+Purpose			- Web Container Port(HTTP Transport Port).
+Default value   - 16310
+Valid values    - A port number must be an integer in the range [1..65535]-->
+<data key='user.WC_defaulthost' value='16310'/>
+
+<!-- Data key 'user.IPC_CONNECTOR_ADDRESS'
+Purpose			- IPC Connector Port.
+Default value   - 16314
+Valid values    - A port number must be an integer in the range [1..65535]-->
+<data key='user.IPC_CONNECTOR_ADDRESS' value='16314'/>
+
+<!-- Data key 'user.WC_defaulthost_secure'
+Purpose			- Web Container Port(HTTPS Transport Secure Port).
+Default value   - 16311
+Valid values    - A port number must be an integer in the range [1..65535]-->
+<data key='user.WC_defaulthost_secure' value='16311'/>
+
+<!-- Data key 'user.CSIV2_SSL_SERVERAUTH_LISTENER_ADDRESS'
+Purpose			- (Common Secure Interoperability Specification, Version 2)CSIv2 Server Authentication SSL Port.
+Default value   - 16323
+Valid values    - A port number must be an integer in the range [1..65535]-->
+<data key='user.CSIV2_SSL_SERVERAUTH_LISTENER_ADDRESS' value='16323'/>
+
+<!-- Data key 'user.verifyCredentials'
+Purpose			- Used to denote if validation for database user credentials are to be done.
+Default value   - true
+Valid values    - true,false -->
+<data key='user.verifyCredentials,com.ibm.tivoli.tacct.psc.install.server' value='true'/>
+
+<!-- Data key 'user.DB_JDBC_TYPE'
+Purpose			- Database software used by Registry Services.
+Default value   - DB2
+Valid values    - DB2 -->
+<data key='user.DB_JDBC_TYPE,com.ibm.tivoli.tacct.psc.install.server' value='DB2'/>
+
+<!-- Data key 'user.DB_NAME'
+Purpose			- Name of database created by Registry Services.
+Default value   - frsdb
+Valid values    - Non blank field.
+				  Using following pattern: "[a-zA-Z@#$][\\w@#$]*" 
+				  (start with an alphabet or one of @ # $; followed by zero or more of alphabets, digits, underscore or @ # $)-->
+<data key='user.DB_NAME,com.ibm.tivoli.tacct.psc.install.server' value='frsdb'/>
+
+<!-- Data key 'user.DB_CONN_URL'
+Purpose			- Database connection URL used by Registry Services to connect to the database. 
+Default value   - jdbc:db2://<Database hostname>:<Database port name>/<Database name>
+				  jdbc:db2://<user.DB_JDBC_HOST_NAME>:<user.DB_JDBC_PORT>/<user.DB_NAME>
+Valid values    - Valid URL which can establish a connection to Database -->
+<data key='user.DB_CONN_URL,com.ibm.tivoli.tacct.psc.install.server' value='jdbc:db2://localhost:50000/frsdb'/>
+
+<!-- Data key 'user.DB_USER_NAME'
+Purpose			- Database user name used by Registry Services.
+Default value   - smadmin
+Valid values    - Non blank field. User name should exist in the DB2 instance created. This can be checked by logging in to the machine using the username'user.DB_USER_NAME' and a valid password'user.DB_PASSWORD'  -->
+<data key='user.DB_USER_NAME,com.ibm.tivoli.tacct.psc.install.server' value='db2inst1'/>
+
+<!-- Data key 'user.DB_PASSWORD'
+Purpose			- Password for the 'DB_PASSWORD' encoded with IBM Installation Manager. To encrypt password goto IBM Installation Manager install location in command prompt type 'IBMIM.exe encryptString MyPassword' a dialog opens giving you the encrypted password. Copy and paste the encrypted password as value below.
+				  Eg: \opt\IBM\Installation Manager\eclipse>IBMIM.sh encryptString MyPassword
+Default value   - None, must be specified by user in this response file.
+Valid values    - Non blank field. Password created for User name 'user.DB_USER_NAME'. This can be checked by logging in to the machine using the username'user.DB_USER_NAME' and a valid password'user.DB_PASSWORD' -->
+<data key='user.DB_PASSWORD,com.ibm.tivoli.tacct.psc.install.server' value='dZntoFZAqDYuaHe/9Cs9pQ=='/>
+
+<!-- Data key 'user.DB_JDBC_HOST_NAME'
+Purpose			- Hostname of the machine where DB2 is installed.
+Default value   - localhost -->
+<data key='user.DB_JDBC_HOST_NAME,com.ibm.tivoli.tacct.psc.install.server' value='localhost'/>
+
+<!-- Data key 'user.DB_JDBC_PORT'
+Purpose			- Database connection port.
+Default value   - 50000
+Valid values    - A port number must be an integer in the range [1..65535]-->
+<data key='user.DB_JDBC_PORT,com.ibm.tivoli.tacct.psc.install.server' value='50000'/>
+
+<!-- Data key 'user.DB2_INSTANCE'
+Purpose			- Database instance.
+Default value   - smadmin
+Valid values    - Name of an existing DB2 instance. For Unix systems, this should be same as <usr.DB_USER_NAME> -->
+<data key='user.DB2_INSTANCE,com.ibm.tivoli.tacct.psc.install.server' value='db2inst1'/>
+
+<!-- Data key 'user.DB_DROP_TYPE'
+Purpose		- Database drop type it can be either full or normal. "Full" value means, installer will drop the database during rollback on failure. "Normal" value means, installer will delete Registry Services objects (tables, indexes, etc) from the database during rollback on failure.
+Default value   - full
+Valid values    - full or normal-->
+<data key='user.DB_DROP_TYPE,com.ibm.tivoli.tacct.psc.install.server' value='normal'/>
+
+<!-- Data key 'user.TIP_CONTEXT_ROOT'
+Purpose			- It is the URI context root used to deploy IBM Dashboard Application Services Hub console.
+Default value   - /ibm/console
+Valid values    - Any alpha-numeric value starting with '/' -->
+<data key='user.TIP_CONTEXT_ROOT' value='/ibm/console'/>
+
+<!-- Data key 'user.WAS_LIBERTY_HOME'
+Purpose			- Location where WebSphere Application Server Liberty is selected to install.
+Default value   - /opt/IBM/WebSphere/AppServer
+Valid values    - Empty directory location which has write permission -->
+<data key='user.WAS_LIBERTY_HOME' value='/opt/IBM/WebSphere/AppServer'/>
+
+<!-- Data key 'user.WAS_LIBERTY_HTTP_PORT'
+Purpose			- HTTP transport port for WebSphere Application Server Liberty configuration.
+Default value   - 8080
+Valid values    - A port number must be an integer in the range [1..65535] -->
+<data key='user.WAS_LIBERTY_HTTP_PORT' value='8080'/>
+
+<!-- Data key 'user.WAS_LIBERTY_HTTPS_PORT'
+Purpose			- HTTPS Secure transport port for WebSphere Application Server Liberty configuration.
+Default value   - 8444
+Valid values    - A port number must be an integer in the range [1..65535] -->
+<data key='user.WAS_LIBERTY_HTTPS_PORT' value='8444'/>
+
+<!-- Data key 'user.LOCAL_HOST_FQN'
+Purpose			- Fully Qualified Hostname of the machine where WebSphere Application Server is selected to install.
+Default value   - localhost -->
+<data key='user.LOCAL_HOST_FQN' value='localhost'/>
+
+<!-- Data key 'user.LIBERTY_BASE_AUTH_USER_NAME'
+Purpose			- Administative user name for the JazzSM WebSphere Application Server Liberty profile.
+Default value   - smadmin -->
+<data key='user.LIBERTY_BASE_AUTH_USER_NAME,com.ibm.tivoli.tacct.psc.install.admin.server' value='system'/>
+
+<!-- Data key 'user.LIBERTY_BASE_AUTH_PASSWORD'
+Purpose			- Password for the 'LIBERTY_BASE_AUTH_PASSWORD' encoded with IBM Installation Manager. To encrypt password goto IBM Installation Manager install location in command prompt type 'IBMIM.exe encryptString MyPassword' a dialog opens giving you the encrypted password. Copy and paste the encrypted password as value below.
+				  Eg: C:\Program Files (x86)\IBM\Installation Manager\eclipse>IBMIM.exe encryptString MyPassword
+Default value   - None, must be specified by user in this response file. -->
+<data key='user.LIBERTY_BASE_AUTH_PASSWORD,com.ibm.tivoli.tacct.psc.install.admin.server' value='soAJt90tmloiQuRlROBTBg=='/>
+
+<!-- Data key 'user.WAS_HOME'
+Purpose			- Location where WebSphere Application Server is selected to install.
+Default value   - /opt/IBM/WebSphere/AppServer
+Valid values    - Empty directory location which has write permission -->
+<data key='user.WAS_HOME' value='/opt/IBM/WebSphere/AppServer'/>
+
+<!-- Data key 'user.CREATE_NEW_WAS_PROFILE'
+Purpose			- It is used to create a new profile or use existing WebSphere Application Server profile.
+Default value   - true
+Valid values    - true/false -->
+<data key='user.CREATE_NEW_WAS_PROFILE' value='true'/>
+
+<!-- Data key 'user.WAS_PROFILE_PATH'
+Purpose			- Location of WebSphere Application Server profile that will be created during JazzSM installation.
+Default value   - /opt/IBM/JazzSM/profile
+Valid values    - Empty directory location which has write permission -->
+<data key='user.WAS_PROFILE_PATH' value='/opt/IBM/JazzSM/profile'/>
+
+<!-- Data key 'user.WAS_PROFILE_NAME'
+Purpose			- Name of the WebSphere Application Server profile.
+Default value   - JazzSMProfile
+Valid values    - A valid alpha-numeric string -->
+<data key='user.WAS_PROFILE_NAME' value='JazzSMProfile'/>
+
+<!-- Data key 'user.WAS_HOST_NAME'
+Purpose		- Hostname of the machine where WebSphere Application Server is selected to install.
+Default value   - localhost -->
+<data key='user.WAS_HOST_NAME' value='localhost'/>
+
+<!-- Data key 'user.WAS_SERVER_NAME'
+Purpose			- Name of WebSphere Application server created.
+Default value   - server1
+Valid values    - A valid alpha-numeric string -->
+<data key='user.WAS_SERVER_NAME' value='server1'/>
+
+<!-- Data key 'user.WAS_NODE'
+Purpose			- Name of the WebSphere Application Server node created.
+Default value   - JazzSMNode01
+Valid values    - A valid alpha-numeric string -->
+<data key='user.WAS_NODE' value='JazzSMNode01'/>
+
+<!-- Data key 'user.WAS_USER_NAME'
+Purpose			- Administrative user name for the JazzSM WebSphere Application Server profile.
+Default value   - smadmin
+Valid values    - A valid alpha-numeric string -->
+<data key='user.WAS_USER_NAME' value='system'/>
+
+<!-- Data key 'user.WAS_PASSWORD'
+Purpose			- Password for the 'WAS_USER_NAME' encoded with IBM Installation Manager. To encrypt password goto IBM Installation Manager install location in command prompt type 'IBMIM.sh encryptString MyPassword' a dialog opens giving you the encrypted password. Copy and paste the encrypted password as value below.
+				  Eg: \opt\IBM\Installation Manager\eclipse>IBMIM.sh encryptString MyPassword
+Default value   - None, must be specified by user in this response file. 
+Valid values    - -->
+<data key='user.WAS_PASSWORD' value='soAJt90tmloiQuRlROBTBg=='/>
+
+<!-- Data key 'user.WAS_CELL'
+Purpose			- Cell name of WebSphere Application Server.
+Default value   - JazzSMNode01Cell
+Valid values    - A valid alpha-numeric string -->
+<data key='user.WAS_CELL' value='JazzSMNode01Cell'/>
+
+<!-- Data key 'user.FRS_AUTHENTICATION_TYPE'
+Purpose			- Provide authentication type for Registry Services web-application. Certificate based authentication requires post install manual steps to follow.
+Default value   - BASIC
+Valid values    - BASIC/CERTIFICATE -->
+<data key='user.FRS_AUTHENTICATION_TYPE,com.ibm.tivoli.tacct.psc.install.server' value='BASIC'/>
+
+<!-- Data key 'user.FRS_AUTHORIZATION_ALL_AUTHENTICATED_ADMIN'
+Purpose			- Specify whether all authenticated users are administrators or not for Registry Services.
+Default value   - false
+Valid values    - false/true -->
+<data key='user.FRS_AUTHORIZATION_ALL_AUTHENTICATED_ADMIN,com.ibm.tivoli.tacct.psc.install.server' value='false'/>
+
+<!-- Data key 'user.FRS_AUTHORIZATION_EVERYONE_ADMIN'
+Purpose			- Specify whether all users are administrators or not for Registry Services.
+Default value   - false
+Valid values    - false/true -->
+<data key='user.FRS_AUTHORIZATION_EVERYONE_ADMIN,com.ibm.tivoli.tacct.psc.install.server' value='false'/>
+
+<!-- Data key 'user.FRS_AUTHORIZATION_USERS_ADMIN'
+Purpose			- Name of the users who are authorized to access Registry Services web-application.
+Default value   - smadmin
+Valid values    - A valid alpha-numeric string -->
+<data key='user.FRS_AUTHORIZATION_USERS_ADMIN,com.ibm.tivoli.tacct.psc.install.server' value='system'/>
+
+<!-- Data key 'user.FRS_AUTHORIZATION_GROUPS_ADMIN'
+Purpose			- Name of the user groups who are authorized to access Registry Services web-application.
+Default value   - None, must be specified by user in this response file.
+Valid values    - A valid alpha-numeric string -->
+<data key='user.FRS_AUTHORIZATION_GROUPS_ADMIN,com.ibm.tivoli.tacct.psc.install.server' value=''/>
+
+<!-- Data key 'user.FRS_INSTALL_LOCATION'
+Purpose			- Installation location which is used for deployment of Registry Services, if Registry Services is installed on remote machine then this value can be left empty.
+Default value   - /opt/IBM/JazzSM -->
+<data key='user.FRS_INSTALL_LOCATION,com.ibm.tivoli.tacct.psc.install.admin.server' value='/opt/IBM/JazzSM'/>
+
+<!-- Data key 'user.FRS_INSTALL_LOCATION'
+Purpose			- Installation location which is used for deployment of Registry Services, if Registry Services is installed on remote machine then this value can be left empty.
+Default value   - /opt/IBM/JazzSM -->
+<data key='user.FRS_INSTALL_LOCATION,com.ibm.tivoli.tacct.psc.install.admin.ui' value='/opt/IBM/JazzSM'/>
+<data key='cic.selector.nl' value='en'/>
+</profile>
+
+<!-- preference name 'com.ibm.cic.common.core.preferences.eclipseCache'
+Purpose			- IBM Installation Manager needs a temp space to extract the files from repository location, so it uses this location 
+Default value   - /opt/IBM/IMShared
+Valid values    - Any directory location which has write permission -->
+<preference name='com.ibm.cic.common.core.preferences.eclipseCache' value='/opt/IBM/IMShared'/>
+
+<!-- ######################################################################
+Do not modify the properties in this section.
+############################################################################--> 
+<preference name='com.ibm.cic.common.core.preferences.connectTimeout' value='30'/>
+<preference name='com.ibm.cic.common.core.preferences.readTimeout' value='45'/>
+<preference name='com.ibm.cic.common.core.preferences.downloadAutoRetryCount' value='0'/>
+<preference name='offering.service.repositories.areUsed' value='true'/>
+<preference name='com.ibm.cic.common.core.preferences.ssl.nonsecureMode' value='false'/>
+<preference name='com.ibm.cic.common.core.preferences.http.disablePreemptiveAuthentication' value='false'/>
+<preference name='http.ntlm.auth.kind' value='NTLM'/>
+<preference name='http.ntlm.auth.enableIntegrated.win32' value='true'/>
+<preference name='com.ibm.cic.common.core.preferences.preserveDownloadedArtifacts' value='true'/>
+<preference name='com.ibm.cic.common.core.preferences.keepFetchedFiles' value='false'/>
+<preference name='PassportAdvantageIsEnabled' value='false'/>
+<preference name='com.ibm.cic.common.core.preferences.searchForUpdates' value='false'/>
+<preference name='com.ibm.cic.agent.ui.displayInternalVersion' value='false'/>
+<preference name='com.ibm.cic.common.sharedUI.showErrorLog' value='true'/>
+<preference name='com.ibm.cic.common.sharedUI.showWarningLog' value='true'/>
+<preference name='com.ibm.cic.common.sharedUI.showNoteLog' value='true'/>
+</agent-input>

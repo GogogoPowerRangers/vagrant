@@ -1,0 +1,18 @@
+IBM DB2 Server V10.5 for Linux on AMD64 and Intel EM64T systems (x64) Multilingual (CIK9IML) - View details
+Size	1,322mb
+Date posted	14-Jun-2013
+
+Provision
+
+Download DB2 installation image
+==> DB2_Svr_V10.5_Linux_x86-64.tar.gz
+
+Extract DB2 installation files
+==> gunzip -c DB2_Svr_V10.5_Linux_x86-64.tar.gz | tar -xvf -
+==> touch /tmp/Extract_DB2_installation_files
+
+DB2 installation
+==> cd server
+==> sudo ./db2setup -r /vagrant/itmhost-db2server.rsp
+==> creates /home/db2inst1
+

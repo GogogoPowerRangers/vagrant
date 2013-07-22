@@ -1,0 +1,6 @@
+chef-install
+chef-run
+*.gz
+*.rpm
+*.tar
+*.zip
