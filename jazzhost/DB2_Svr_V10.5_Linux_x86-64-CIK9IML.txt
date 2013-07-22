@@ -9,10 +9,10 @@ Download DB2 installation image
 
 Extract DB2 installation files
 ==> gunzip -c DB2_Svr_V10.5_Linux_x86-64.tar.gz | tar -xvf -
-==> touch /tmp/Extract_DB2_installation_files
+==> creates /tmp/server
 
 DB2 installation
-==> cd server
+==> cd /tmp/server
 ==> sudo ./db2setup -r /vagrant/itmhost-db2server.rsp
 ==> creates /home/db2inst1
 

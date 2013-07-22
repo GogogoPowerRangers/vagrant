@@ -9,12 +9,12 @@ Download installation images
 ==> WAS_V8.5.0.1_FOR_JAZZSM_LINUX_ML.zip
 
 Extract installation files
-==> mkdir /vagrant/tmp
-==> cd /vagrant/tmp
+==> mkdir /tmp/jazzsm
+==> cd /tmp/jazzsm
 ==> unzip /vagrant/JSM_1.1_LAUNCHPAD_FOR_LINUX.zip
 ==> unzip /vagrant/WAS_V8.5.0.1_FOR_JAZZSM_LINUX_ML.zip
 
 Install WebSphere and Jazz Service Management
-==> cd /vagrant/tmp/im.linux.x86_64
+==> cd /tmp/jazzsm/im.linux.x86_64
 ==> ./userinstc -acceptLicense -dataLocation /tmp/silent-install/data -silent -showVerboseProgress -nosplash -input /vagrant/itmhost-install_jazzsm_was_libertyprofile_response.xml 
 

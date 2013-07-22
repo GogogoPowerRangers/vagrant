@@ -25,8 +25,8 @@ You do not need to remove the repository from this section if you decide not to 
 that product.
 ############################################################################--> 
 <server>
-<repository location='/vagrant/tmp/JazzSMRepository/disk1' temporary="true"/>
-<repository location='/vagrant/tmp/WASRepository/disk1' temporary="true"/>
+<repository location='/tmp/jazzsm/JazzSMRepository/disk1' temporary="true"/>
+<repository location='/tmp/jazzsm/WASRepository/disk1' temporary="true"/>
 </server>
 
 <!-- #########################################################################################
