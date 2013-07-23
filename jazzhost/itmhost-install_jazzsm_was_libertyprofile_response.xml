@@ -242,6 +242,7 @@ Purpose			- Password for the 'DB_PASSWORD' encoded with IBM Installation Manager
 				  Eg: \opt\IBM\Installation Manager\eclipse>IBMIM.sh encryptString MyPassword
 Default value   - None, must be specified by user in this response file.
 Valid values    - Non blank field. Password created for User name 'user.DB_USER_NAME'. This can be checked by logging in to the machine using the username'user.DB_USER_NAME' and a valid password'user.DB_PASSWORD' -->
+<!-- vagrant is 'dZntoFZAqDYuaHe/9Cs9pQ==' -->
 <data key='user.DB_PASSWORD,com.ibm.tivoli.tacct.psc.install.server' value='dZntoFZAqDYuaHe/9Cs9pQ=='/>
 
 <!-- Data key 'user.DB_JDBC_HOST_NAME'
@@ -305,6 +306,7 @@ Default value   - smadmin -->
 Purpose			- Password for the 'LIBERTY_BASE_AUTH_PASSWORD' encoded with IBM Installation Manager. To encrypt password goto IBM Installation Manager install location in command prompt type 'IBMIM.exe encryptString MyPassword' a dialog opens giving you the encrypted password. Copy and paste the encrypted password as value below.
 				  Eg: C:\Program Files (x86)\IBM\Installation Manager\eclipse>IBMIM.exe encryptString MyPassword
 Default value   - None, must be specified by user in this response file. -->
+<!-- manager is 'soAJt90tmloiQuRlROBTBg==' -->
 <data key='user.LIBERTY_BASE_AUTH_PASSWORD,com.ibm.tivoli.tacct.psc.install.admin.server' value='soAJt90tmloiQuRlROBTBg=='/>
 
 <!-- Data key 'user.WAS_HOME'
@@ -359,6 +361,7 @@ Purpose			- Password for the 'WAS_USER_NAME' encoded with IBM Installation Manag
 				  Eg: \opt\IBM\Installation Manager\eclipse>IBMIM.sh encryptString MyPassword
 Default value   - None, must be specified by user in this response file. 
 Valid values    - -->
+<!-- manager is 'soAJt90tmloiQuRlROBTBg==' -->
 <data key='user.WAS_PASSWORD' value='soAJt90tmloiQuRlROBTBg=='/>
 
 <!-- Data key 'user.WAS_CELL'

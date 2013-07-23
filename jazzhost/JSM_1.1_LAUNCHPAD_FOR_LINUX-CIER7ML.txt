@@ -16,5 +16,9 @@ Extract installation files
 
 Install WebSphere and Jazz Service Management
 ==> cd /tmp/jazzsm/im.linux.x86_64
-==> ./userinstc -acceptLicense -dataLocation /tmp/silent-install/data -silent -showVerboseProgress -nosplash -input /vagrant/itmhost-install_jazzsm_was_libertyprofile_response.xml 
+==> sudo ./userinstc -acceptLicense -dataLocation /tmp/silent-install/data -silent -showVerboseProgress -nosplash -input /vagrant/itmhost-install_jazzsm_was_libertyprofile_response.xml 
 
+Silent installation issues
+==> Failed to encode password using securityUtility command of WebSphere Application Server Liberty profile
+==> This appears to occur when there is no /usr/bin/java
+==> Use DB2 Java or install JRE Java before running silent installation
