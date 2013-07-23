@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- 
+<!--
  /********************************************************** {COPYRIGHT-TOP} ****
  * IBM Confidential
  * Jazz for Service Management - Install
  *
  * (C) Copyright IBM Corp. 2013  All Rights Reserved.
  *
- * The source code for this program is not published or otherwise  
- * divested of its trade secrets, irrespective of what has been 
+ * The source code for this program is not published or otherwise
+ * divested of its trade secrets, irrespective of what has been
  * deposited with the U.S. Copyright Office.
- ********************************************************** {COPYRIGHT-END} ***/ 
+ ********************************************************** {COPYRIGHT-END} ***/
 -->
 <agent-input>
 <!-- #########################################################################################
@@ -43,12 +43,12 @@ Valid values    - DB2 -->
 Purpose			- Name of database created by Registry Services.
 Default value   - frsdb
 Valid values    - Non blank field.
-				  Using following pattern: "[a-zA-Z@#$][\\w@#$]*" 
+				  Using following pattern: "[a-zA-Z@#$][\\w@#$]*"
 				  (start with an alphabet or one of @ # $; followed by zero or more of alphabets, digits, underscore or @ # $)-->
 <data key='user.DB_NAME,com.ibm.tivoli.tacct.psc.install.server' value='frsdb'/>
 
 <!-- Data key 'user.DB_CONN_URL'
-Purpose			- Database connection URL used by Registry Services to connect to the database. 
+Purpose			- Database connection URL used by Registry Services to connect to the database.
 Default value   - jdbc:db2://<Database hostname>:<Database port name>/<Database name>
 				  jdbc:db2://<user.DB_JDBC_HOST_NAME>:<user.DB_JDBC_PORT>/<user.DB_NAME>
 Valid values    - Valid URL which can establish a connection to Database -->
@@ -58,14 +58,15 @@ Valid values    - Valid URL which can establish a connection to Database -->
 Purpose			- Database user name used by Registry Services.
 Default value   - smadmin
 Valid values    - Non blank field. User name should exist in the DB2 instance created. This can be checked by logging in to the machine using the username'user.DB_USER_NAME' and a valid password'user.DB_PASSWORD'  -->
-<data key='user.DB_USER_NAME,com.ibm.tivoli.tacct.psc.install.server' value='smadmin'/>
+<data key='user.DB_USER_NAME,com.ibm.tivoli.tacct.psc.install.server' value='db2inst1'/>
 
 <!-- Data key 'user.DB_PASSWORD'
 Purpose			- Password for the 'DB_PASSWORD' encoded with IBM Installation Manager. To encrypt password goto IBM Installation Manager install location in command prompt type 'IBMIM.exe encryptString MyPassword' a dialog opens giving you the encrypted password. Copy and paste the encrypted password as value below.
 				  Eg: C:\Program Files (x86)\IBM\Installation Manager\eclipse>IBMIM.exe encryptString MyPassword
 Default value   - None, must be specified by user in this response file.
 Valid values    - Non blank field. Password created for User name 'user.DB_USER_NAME'. This can be checked by logging in to the machine using the username'user.DB_USER_NAME' and a valid password'user.DB_PASSWORD' -->
-<data key='user.DB_PASSWORD,com.ibm.tivoli.tacct.psc.install.server' value='KFqb6/OkaUAvitfuIo2chw=='/>
+<!-- vagrant is 'dZntoFZAqDYuaHe/9Cs9pQ==' -->
+<data key='user.DB_PASSWORD,com.ibm.tivoli.tacct.psc.install.server' value='dZntoFZAqDYuaHe/9Cs9pQ=='/>
 
 <!-- Data key 'user.DB_JDBC_HOST_NAME'
 Purpose			- Hostname of the machine where DB2 is installed.
@@ -82,7 +83,7 @@ Valid values    - A port number must be an integer in the range [1..65535]-->
 Purpose			- Database instance.
 Default value   - smadmin
 Valid values    - Name of an existing DB2 instance. For Unix systems, this should be same as <user.DB_USER_NAME> -->
-<data key='user.DB2_INSTANCE,com.ibm.tivoli.tacct.psc.install.server' value='smadmin'/>
+<data key='user.DB2_INSTANCE,com.ibm.tivoli.tacct.psc.install.server' value='db2inst1'/>
 
 <!-- Data key 'user.DB_DROP_TYPE'
 Purpose		- Database drop type it can be either full or normal. "Full" value means, installer will drop the database during uninstallation. "Normal" value means, installer will delete Registry Services objects (tables, indexes, etc) from the database during uninstallation.
@@ -135,14 +136,15 @@ Valid values    - A valid alpha-numeric string -->
 Purpose			- Administative user name for the JazzSM WebSphere Application Server profile.
 Default value   - smadmin
 Valid values    - A valid alpha-numeric string -->
-<data key='user.WAS_USER_NAME' value='smadmin'/>
+<data key='user.WAS_USER_NAME' value='system'/>
 
 <!-- Data key 'user.WAS_PASSWORD'
 Purpose			- Password for the 'WAS_USER_NAME' encoded with IBM Installation Manager. To encrypt password goto IBM Installation Manager install location in command prompt type 'IBMIM.exe encryptString MyPassword' a dialog opens giving you the encrypted password. Copy and paste the encrypted password as value below.
 				  Eg: C:\Program Files (x86)\IBM\Installation Manager\eclipse>IBMIM.exe encryptString MyPassword
-Default value   - None, must be specified by user in this response file. 
+Default value   - None, must be specified by user in this response file.
 Valid values    - -->
-<data key='user.WAS_PASSWORD' value='KFqb6/OkaUAvitfuIo2chw=='/>
+<!-- manager is 'soAJt90tmloiQuRlROBTBg==' -->
+<data key='user.WAS_PASSWORD' value='soAJt90tmloiQuRlROBTBg=='/>
 
 <!-- Data key 'user.WAS_CELL'
 Purpose			- Cell name of WebSphere Application Server.
@@ -178,14 +180,14 @@ Default value   - /opt/IBM/JazzSM -->
 </uninstall>
 
 <!-- preference name 'com.ibm.cic.common.core.preferences.eclipseCache'
-Purpose			- IBM Installation Manager needs a temp space to extract the files from repository location, so it uses this location 
+Purpose			- IBM Installation Manager needs a temp space to extract the files from repository location, so it uses this location
 Default value   - /opt/IBM/IMShared
 Valid values    - Any directory location which has write permission -->
 <preference name='com.ibm.cic.common.core.preferences.eclipseCache' value='/opt/IBM/IMShared'/>
 
 <!-- ######################################################################
 Do not modify the properties in this section.
-############################################################################--> 
+############################################################################-->
 <preference name='com.ibm.cic.common.core.preferences.connectTimeout' value='30'/>
 <preference name='com.ibm.cic.common.core.preferences.readTimeout' value='45'/>
 <preference name='com.ibm.cic.common.core.preferences.downloadAutoRetryCount' value='0'/>

@@ -25,8 +25,8 @@ You do not need to remove the repository from this section if you decide not to 
 that product.
 ############################################################################--> 
 <server>
-<repository location='/tmp/JazzSMRepository/disk1' temporary="true"/>
-<repository location='/tmp/WASRepository/disk1' temporary="true"/>
+<repository location='/tmp/jazzsm/JazzSMRepository/disk1' temporary="true"/>
+<repository location='/tmp/jazzsm/WASRepository/disk1' temporary="true"/>
 </server>
 
 <!-- #########################################################################################
@@ -235,14 +235,15 @@ Valid values    - Valid URL which can establish a connection to Database -->
 Purpose			- Database user name used by Registry Services.
 Default value   - smadmin
 Valid values    - Non blank field. User name should exist in the DB2 instance created. This can be checked by logging in to the machine using the username'user.DB_USER_NAME' and a valid password'user.DB_PASSWORD'  -->
-<data key='user.DB_USER_NAME,com.ibm.tivoli.tacct.psc.install.server' value='smadmin'/>
+<data key='user.DB_USER_NAME,com.ibm.tivoli.tacct.psc.install.server' value='db2inst1'/>
 
 <!-- Data key 'user.DB_PASSWORD'
 Purpose			- Password for the 'DB_PASSWORD' encoded with IBM Installation Manager. To encrypt password goto IBM Installation Manager install location in command prompt type 'IBMIM.exe encryptString MyPassword' a dialog opens giving you the encrypted password. Copy and paste the encrypted password as value below.
 				  Eg: \opt\IBM\Installation Manager\eclipse>IBMIM.sh encryptString MyPassword
 Default value   - None, must be specified by user in this response file.
 Valid values    - Non blank field. Password created for User name 'user.DB_USER_NAME'. This can be checked by logging in to the machine using the username'user.DB_USER_NAME' and a valid password'user.DB_PASSWORD' -->
-<data key='user.DB_PASSWORD,com.ibm.tivoli.tacct.psc.install.server' value='KFqb6/OkaUAvitfuIo2chw=='/>
+<!-- vagrant is 'dZntoFZAqDYuaHe/9Cs9pQ==' -->
+<data key='user.DB_PASSWORD,com.ibm.tivoli.tacct.psc.install.server' value='dZntoFZAqDYuaHe/9Cs9pQ=='/>
 
 <!-- Data key 'user.DB_JDBC_HOST_NAME'
 Purpose			- Hostname of the machine where DB2 is installed.
@@ -259,7 +260,7 @@ Valid values    - A port number must be an integer in the range [1..65535]-->
 Purpose			- Database instance.
 Default value   - smadmin
 Valid values    - Name of an existing DB2 instance. For Unix systems, this should be same as <usr.DB_USER_NAME> -->
-<data key='user.DB2_INSTANCE,com.ibm.tivoli.tacct.psc.install.server' value='smadmin'/>
+<data key='user.DB2_INSTANCE,com.ibm.tivoli.tacct.psc.install.server' value='db2inst1'/>
 
 <!-- Data key 'user.DB_DROP_TYPE'
 Purpose		- Database drop type it can be either full or normal. "Full" value means, installer will drop the database during rollback on failure. "Normal" value means, installer will delete Registry Services objects (tables, indexes, etc) from the database during rollback on failure.
@@ -299,13 +300,14 @@ Default value   - localhost -->
 <!-- Data key 'user.LIBERTY_BASE_AUTH_USER_NAME'
 Purpose			- Administative user name for the JazzSM WebSphere Application Server Liberty profile.
 Default value   - smadmin -->
-<data key='user.LIBERTY_BASE_AUTH_USER_NAME,com.ibm.tivoli.tacct.psc.install.admin.server' value='smadmin'/>
+<data key='user.LIBERTY_BASE_AUTH_USER_NAME,com.ibm.tivoli.tacct.psc.install.admin.server' value='system'/>
 
 <!-- Data key 'user.LIBERTY_BASE_AUTH_PASSWORD'
 Purpose			- Password for the 'LIBERTY_BASE_AUTH_PASSWORD' encoded with IBM Installation Manager. To encrypt password goto IBM Installation Manager install location in command prompt type 'IBMIM.exe encryptString MyPassword' a dialog opens giving you the encrypted password. Copy and paste the encrypted password as value below.
 				  Eg: C:\Program Files (x86)\IBM\Installation Manager\eclipse>IBMIM.exe encryptString MyPassword
 Default value   - None, must be specified by user in this response file. -->
-<data key='user.LIBERTY_BASE_AUTH_PASSWORD,com.ibm.tivoli.tacct.psc.install.admin.server' value='KFqb6/OkaUAvitfuIo2chw=='/>
+<!-- manager is 'soAJt90tmloiQuRlROBTBg==' -->
+<data key='user.LIBERTY_BASE_AUTH_PASSWORD,com.ibm.tivoli.tacct.psc.install.admin.server' value='soAJt90tmloiQuRlROBTBg=='/>
 
 <!-- Data key 'user.WAS_HOME'
 Purpose			- Location where WebSphere Application Server is selected to install.
@@ -352,14 +354,15 @@ Valid values    - A valid alpha-numeric string -->
 Purpose			- Administrative user name for the JazzSM WebSphere Application Server profile.
 Default value   - smadmin
 Valid values    - A valid alpha-numeric string -->
-<data key='user.WAS_USER_NAME' value='smadmin'/>
+<data key='user.WAS_USER_NAME' value='system'/>
 
 <!-- Data key 'user.WAS_PASSWORD'
 Purpose			- Password for the 'WAS_USER_NAME' encoded with IBM Installation Manager. To encrypt password goto IBM Installation Manager install location in command prompt type 'IBMIM.sh encryptString MyPassword' a dialog opens giving you the encrypted password. Copy and paste the encrypted password as value below.
 				  Eg: \opt\IBM\Installation Manager\eclipse>IBMIM.sh encryptString MyPassword
 Default value   - None, must be specified by user in this response file. 
 Valid values    - -->
-<data key='user.WAS_PASSWORD' value='KFqb6/OkaUAvitfuIo2chw=='/>
+<!-- manager is 'soAJt90tmloiQuRlROBTBg==' -->
+<data key='user.WAS_PASSWORD' value='soAJt90tmloiQuRlROBTBg=='/>
 
 <!-- Data key 'user.WAS_CELL'
 Purpose			- Cell name of WebSphere Application Server.
@@ -389,7 +392,7 @@ Valid values    - false/true -->
 Purpose			- Name of the users who are authorized to access Registry Services web-application.
 Default value   - smadmin
 Valid values    - A valid alpha-numeric string -->
-<data key='user.FRS_AUTHORIZATION_USERS_ADMIN,com.ibm.tivoli.tacct.psc.install.server' value='smadmin'/>
+<data key='user.FRS_AUTHORIZATION_USERS_ADMIN,com.ibm.tivoli.tacct.psc.install.server' value='system'/>
 
 <!-- Data key 'user.FRS_AUTHORIZATION_GROUPS_ADMIN'
 Purpose			- Name of the user groups who are authorized to access Registry Services web-application.
