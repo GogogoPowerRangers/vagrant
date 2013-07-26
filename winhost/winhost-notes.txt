@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-Install RVM
+Install RVM (Windows base box)
 
 1.  curl -L https://get.rvm.io | bash
 
@@ -23,14 +23,14 @@ Install Ruby 1.9.3
 1.  rvm install 1.9.3 --with-gcc=clang
 
 
-Install Vagrant Windows gems
+Install Vagrant Windows gems (Windows base box)
 
 1.  gem install vagrant-windows
 
 2.  gem install em-winrm
 
 
-Install Chef
+Install Chef (Windows base box)
 
 1.  Download http://opscode.com/chef/install.msi.
 
@@ -56,7 +56,12 @@ Chef cookbooks and Vagrant files
     edit the host location as just "vagrant".
     Map \\VBOXSVR\vagrant to Z: drive.
 
-2.  Create C:\cookbooks and C:\vagrant by running ...
+2.  Get cookboks:
+    mkdir cookbooks
+    cd cookbooks
+    git clone https://github.com/dokamura/itmhost.git
+
+3.  Create C:\cookbooks and C:\vagrant by running ...
     cscript /nologo Z:\Z-Chef.vbs
 
 
