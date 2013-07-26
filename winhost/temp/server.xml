@@ -1,0 +1,77 @@
+<server description="SmartCloud Repository (SCR) server">
+
+    <!-- Enable features -->
+    <featureManager>
+        <feature>jsp-2.2</feature>
+		<feature>jdbc-4.0</feature>
+		<feature>servlet-3.0</feature>
+		<feature>appSecurity-1.0</feature>
+    </featureManager>
+
+	<httpOptions maxKeepAliveRequests="-1" />
+
+	<!-- webContainerskipMetaInfResourcesProcessing="true"/ -->
+
+    <httpEndpoint id="defaultHttpEndpoint"
+                  host="*"
+                  httpPort="17310"
+                  httpsPort="17311" />
+
+    <!-- Console tracing -to enable trace, add the following attributes
+         to the logging definitions:
+
+         traceSpecification="com.ibm.micromuse.response.server.oslc*=FINEST"
+         traceFileName="trace.log"
+         traceFormat="BASIC"
+    -->
+    <logging
+        consoleLogLevel="WARNING"
+        maxFileSize="20"
+        maxFiles="5" />
+
+
+	<basicRegistry id="basic" realm="customRealm">
+	    <!-- t3st4tem is {xor}K2wsK2srOjI= -->
+		<user name="apmadmin" password="{xor}K2wsK2srOjI=" />
+	</basicRegistry>
+
+	<application type="war" id="APMScr" name="SCRCLUSTER_SCR_oslc" location="${server.config.dir}/apps/scr.war">
+		<classloader apiTypeVisibility="spec, ibm-api, third-party"/>
+                <application-bnd>
+					<security-role name="tomcat">
+						<user name="apmadmin" />
+					</security-role>
+					<security-role name="apmAdmin">
+						<user name="apmadmin" />
+					</security-role>
+				</application-bnd>
+	</application>
+
+	<!-- dataSource id="SCR_DB" jndiName="jdbc/db2" isolationLevel="TRANSACTION_READ_UNCOMMITTED - currentLockTimeout="30s"-->
+	<dataSource id="SCR_DB" jndiName="jdbc/db2">
+		<connectionManager maxPoolSize="20" minPoolSize="5" numConnectionsPerThreadLocal="1"  connectionTimeout="10s" agedTimeout="30m"/>
+		<jdbcDriver libraryRef="DB2JCC4LIB"/>
+
+
+		<properties.db2.jcc databaseName="SCR" serverName="localhost" portNumber="50000"
+				 user="db2admin" password="{xor}K2wsK2srOjI="/>
+
+
+<!--
+		<properties.db2.jcc databaseName="TBSM" serverName="localhost" portNumber="1527"
+				 user="db2inst1" password="db2inst1"/>
+
+
+
+		<properties.db2.jcc databaseName="TBSM" serverName="nc051096.tivlab.raleigh.ibm.com" portNumber="50000"
+				 user="db2inst1" password="db2inst1"/>
+
+-->
+	</dataSource>
+
+	<library id="DB2JCC4LIB">
+		<fileset dir="${server.config.dir}/apps/scr.war/WEB-INF/lib" includes="db2jcc-9.7ga.jar"/>
+	</library>
+
+
+</server>

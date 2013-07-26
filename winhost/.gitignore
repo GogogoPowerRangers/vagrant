@@ -1,1 +1,4 @@
+cookbooks
 windows-7-professional-amd64
+*.exe
+*.zip
