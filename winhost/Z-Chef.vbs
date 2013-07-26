@@ -19,13 +19,12 @@
 Option Explicit
 
 Dim objFSO, objFolder, objShell, objSource, objTarget
-Dim vagDirectory, cooDirectory, cooZipFile, itmDirectory
-Dim intOptions
+Dim vagDirectory, cooDirectory, zooDirectory, itmDirectory
 
 vagDirectory = "C:\vagrant"
 cooDirectory = "C:\cookbooks"
 itmDirectory = cooDirectory & "\itmhost"
-cooZipFile = "Z:\cookbooks.zip"
+zooDirectory = "Z:\cookbooks"
 
 Set objFSO = CreateObject("Scripting.FileSystemObject")
 
@@ -39,13 +38,9 @@ If Not objFSO.FolderExists(vagDirectory) Then
 End If
 
 If Not objFSO.FolderExists(itmDirectory) Then
-    WScript.Echo "Extracting " & cooZipFile
-    Set objShell = CreateObject("Shell.Application")
-    Set objSource = objShell.NameSpace(cooZipFile).Items()
-    Set objTarget = objShell.NameSpace(cooDirectory)
-    intOptions = 4
-    WScript.Echo "Installing in " & cooDirectory
-    objTarget.CopyHere objSource, intOptions
+    WScript.Echo "Copying " & zooDirectory
+    Set objShell = CreateObject("WScript.Shell")
+    objShell.Run "cmd /c xcopy " & zooDirectory & " " & cooDirectory & " /s /q"
 
     WScript.Echo "Copy files to " & vagDirectory
     Set objShell = CreateObject("WScript.Shell")
