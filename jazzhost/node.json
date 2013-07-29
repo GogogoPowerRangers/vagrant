@@ -1,8 +1,0 @@
-{
-    // "resolver": {
-    //     "nameservers": [ "9.0.9.1" ],
-    //     "search": "ibm.com",
-    //     "options": [ "rotate" ]
-    // },
-    "run_list": [ "recipe[itmhost]" ]
-}
