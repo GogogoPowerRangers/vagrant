@@ -6,6 +6,8 @@ Vagrant.configure("2") do |config|
   # config.vm.network "33.33.33.10"
   config.vm.network :forwarded_port, guest: 27017, host: 27018
 
+  config.vm.synced_folder "../data", "/vagrant_data"
+  # config.vm.synced_folder "/Users/dokamura", "/Users/dokamura"
   config.vm.synced_folder "app", "/home/vagrant/app"
 
   # allow for symlinks in the app folder

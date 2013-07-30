@@ -1,3 +1,5 @@
+data/*
+boxes/*
 .vagrant
 .DS_Store
 *.box
