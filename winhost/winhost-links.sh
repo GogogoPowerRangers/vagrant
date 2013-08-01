@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-FILES='DB2_ESE_10_Win_x86-64.exe ibm-java-jre-60-win-x86_64.zip install_liberty.zip setup-dbconfig-windows_64.exe setup-scr-windows_64.exe'
+FILES='DB2_ESE_10_Win_x86-64.exe ibm-java-jre-60-win-x86_64.zip'
 
 rm -f $FILES
 
