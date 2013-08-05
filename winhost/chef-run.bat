@@ -17,6 +17,9 @@
 
 @setlocal
 
+mkdir C:\temp\chef
+mkdir C:\temp\chef\databags
+
 chef-solo -c C:\vagrant\solo.rb -j C:\vagrant\node.json
 
 :done
