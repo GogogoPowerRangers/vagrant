@@ -1,0 +1,98 @@
+win2012core Notes
+
+Windows 2012 Server has a core installation.
+This installation lacks most of the Windows GUI tools.
+Since we are just installing a basic IBM Tivoli Monitoring (ITM) component (e.g,
+Tivoli Enterprise Monitoring Automation Server), we do not require all of
+these administrative tools. ITM components that require lots of Windows tuning or
+configuration are not candidates for the Windows 2012 core installation.
+
+
+*** Download and Install Windows 2012 Server installation ISO
+
+1.  Evaluation download if you do not have MSDN access.
+
+    [ http://technet.microsoft.com/en-us/evalcenter/hh670538.aspx ]
+
+2.  Create Virtual Machine with Virtualbox.
+
+    Use a Virtual Machine name such as win2012core.
+    Choose Windows 2012 Server "core" installation.
+
+    Note: VMware was not tried but should work out fine.
+
+
+*** Basic configuration
+
+1.  Disable firewall since tools are missing.
+
+    netsh advfirewall set allprofiles state off
+
+2.  Enable Windows network discovery.
+
+    netsh advfirewall firewall set rule group="Network Discovery" new enable=Yes
+
+3.  Disable Windows UAC which can be hard to manage.
+
+    Run regedit and set "0 for
+    HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\policies\system\EnableUA
+
+4.  Disable Windows password complexity rules.
+
+    mkdir C:\temp
+    secedit /export /cfg C:\temp\new.cfg
+    echo Replace 'PasswordComplexity=1' with 'PasswordComplexity=0'
+    notepad C:\temp\new.cfg
+    pause
+    secedit /configure /db %windir%\security\new.sdb /cfg C:\temp\new.cfg /areas SECURITYPOLICY
+
+5.  Set hostname.
+
+    netdom renamecomputer localhost /newname:win2012core /reboot /force
+
+6.  Create vagrant user.
+
+    net user vagrant vagrant /add
+    net localgroup Administrators /add vagrant
+
+7.  [Virtualbox] Install Virtual Box Guest Additions.
+
+
+*** Vagrant box
+
+1.  Create Vagrant box.
+
+    mkdir vagrant_repo
+    cd vagrant_repo
+    vagrant init
+    vagrant package --base win2012core --output win2012core.box
+
+
+*** Vagrant
+
+1.  Add Windows ports to Vagrantfile.
+
+    # Create a forwarded port mapping which allows access to a specific port
+    # within the machine from a port on the host machine. In the example below,
+    # accessing "localhost:8080" will access port 80 on the guest machine.
+    config.vm.network :forwarded_port, guest: 80, host: 8080
+    config.vm.network :forwarded_port, guest: 3389, host: 3389
+    config.vm.network :forwarded_port, guest: 5985, host: 5985
+    config.vm.network :forwarded_port, guest: 1433, host: 1433
+    config.vm.network :forwarded_port, guest: 10001, host: 10001
+
+    Note: Take notes if Vagrant uses different ports. For example, port 3389 on
+          Windows hosts is probably in use for Remote Desktop services.
+
+2.  You can boot in GUI mode by uncommenting the Vagrantfile.
+
+    vb.gui = true
+
+    Note: It's also possible to use Windows Remote Desktop to connect.
+
+3.  Since there is no GUI to map drives, you will need to use the Windows net command.
+
+    net use * \\VBOXSVR\vagrant
+    net use * \\VBOXSVR\vagrant_data
+
+
