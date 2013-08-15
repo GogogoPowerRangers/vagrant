@@ -1,0 +1,8 @@
+File                                        Description
+
+/opt/ibm/ccm/oslc_pm/config/.as.environment OSLC-PM Service Provider configuration
+                                            This is a Linux hidden file
+/opt/ibm/ccm/oslc_pm/config/as.run          Created by "itmcmd agent start as"
+                                            Note: Not created in prototype
+
+#
