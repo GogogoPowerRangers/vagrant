@@ -5,4 +5,12 @@ File                                        Description
 /opt/ibm/ccm/oslc_pm/config/as.run          Created by "itmcmd agent start as"
                                             Note: Not created in prototype
 
+/opt/IBM/ITM/tmaitm6/links/lnxx86x6-l24-g44/lib RPATH for programs
+                                                Note: Not created in prototype
+
+Fixup for RPATH (if needed)
+
+sudo mkdir -p /opt/IBM/ITM/tmaitm6/links/lnxx86x6-l24-g44
+sudo ln -sf /opt/ibm/ccm/sma/tmaitm6/lx8266/lib /opt/IBM/ITM/tmaitm6/links/lnxx86x6-l24-g44
+
 #
