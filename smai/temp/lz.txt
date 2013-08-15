@@ -1,0 +1,7 @@
+File                                    Description
+
+/opt/ibm/ccm/sma/config/.lz.environment Linux Agent configuration
+                                        This is a Linux hidden file
+/opt/ibm/ccm/sma/config/lz.run          Created by "itmcmd agent start lz"
+
+#
