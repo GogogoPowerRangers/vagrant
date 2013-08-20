@@ -11,7 +11,16 @@
 # IBM Corp.
 #
 
-for f in /opt/ibm/ccm/sma/logs/* /opt/IBM/ITM/logs/*
+if [ -d /opt/IBM/ITM ] ; then
+    CANDLEHOME=/opt/IBM/ITM
+elif [ -d CANDLEHOME=/opt/ibm/ccm/sma ] ; then
+    CANDLEHOME=/opt/ibm/ccm/sma
+elif [ -d CANDLEHOME=/opt/ibm/ccm/oslc_pm ] ; then
+    CANDLEHOME=/opt/ibm/ccm/oslc_pm
+else
+    echo "CANDLEHOME not found"
+    exit 1
+fi
 do
     if [ "$(sudo fuser $f)" = "" ] ; then
         sudo rm $f

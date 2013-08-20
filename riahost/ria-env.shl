@@ -1,1 +1,0 @@
-export HOSTNAME=$(hostname | sed -e 's#\..*##')
