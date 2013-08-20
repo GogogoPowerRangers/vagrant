@@ -11,17 +11,17 @@
 # IBM Corp.
 #
 
-if [ -d /opt/IBM/ITM ] ; then
-    CANDLEHOME=/opt/IBM/ITM
-elif [ -d CANDLEHOME=/opt/ibm/ccm/sma ] ; then
-    CANDLEHOME=/opt/ibm/ccm/sma
-elif [ -d CANDLEHOME=/opt/ibm/ccm/oslc_pm ] ; then
-    CANDLEHOME=/opt/ibm/ccm/oslc_pm
+if [ -d /opt/IBM/ITM/logs ] ; then
+    ITM_LOG_DIR=/opt/IBM/ITM/logs
+elif [ -d /opt/ibm/ccm/sma/logs ] ; then
+    ITM_LOG_DIR=/opt/ibm/ccm/sma/logs
+elif [ -d /opt/ibm/ccm/oslc_pm/logs ] ; then
+    ITM_LOG_DIR=/opt/ibm/ccm/oslc_pm/logs
 else
-    echo "CANDLEHOME not found"
+    echo "ITM_LOG_DIR not found"
     exit 1
 fi
-for f in $CANDLEHOME/logs/*
+for f in $ITM_LOG_DIR/*
 do
     if [ "$(sudo fuser $f)" = "" ] ; then
         rm $f
