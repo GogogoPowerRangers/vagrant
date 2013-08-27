@@ -17,7 +17,7 @@ Vagrant.configure("2") do |config|
   # Create a forwarded port mapping which allows access to a specific port
   # within the machine from a port on the host machine. In the example below,
   # accessing "localhost:8080" will access port 80 on the guest machine.
-  # config.vm.network :forwarded_port, guest: 80, host: 8080
+  config.vm.network :forwarded_port, guest: 80, host: 8080
   config.vm.network :forwarded_port, guest: 10001, host: 10001
 
   # Create a private network, which allows host-only access to the machine
@@ -36,6 +36,21 @@ Vagrant.configure("2") do |config|
   config.vm.synced_folder "../data", "/vagrant_data"
   config.vm.synced_folder "/Users/dokamura", "/Users/dokamura"
 
+  # Provider-specific configuration so you can fine-tune various
+  # backing providers for Vagrant. These expose provider-specific options.
+  # Example for VirtualBox:
+  #
+  # config.vm.provider :virtualbox do |vb|
+  #   # Don't boot with headless mode
+  #   vb.gui = true
+  #
+  #   # Use VBoxManage to customize the VM. For example to change memory:
+  #   vb.customize ["modifyvm", :id, "--memory", "1024"]
+  # end
+  #
+  # View the documentation for the provider you're using for more
+  # information on available options.
+
   # Enable provisioning with chef solo, specifying a cookbooks path, roles
   # path, and data_bags path (all relative to this Vagrantfile), and adding
   # some recipes and/or roles.
@@ -45,13 +60,14 @@ Vagrant.configure("2") do |config|
     chef.add_recipe "build-essential::default"
     chef.add_recipe "itmhost::default"
     # Note: 9.0.9.1 is for the IBM AT&T Global Network Client VPN
-    chef.json = {
-        "resolver" => {
-            "nameservers" => [ "9.0.9.1" ],
-            "search" => "ibm.com",
-            "options" => [ "rotate" ]
-        }
-    }
+    #       Uncomment if you do not want to edit /etc/resolv.conf
+    # chef.json = {
+    #     "resolver" => {
+    #         "nameservers" => [ "9.0.9.1" ],
+    #         "search" => "ibm.com",
+    #         "options" => [ "rotate" ]
+    #     }
+    # }
   end
 
   # Enable provisioning with chef server, specifying the chef server URL,
