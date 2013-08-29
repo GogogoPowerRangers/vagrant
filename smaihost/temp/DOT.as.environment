@@ -42,7 +42,7 @@ KAS_SERVER_PROTOCOL=HTTP
 KAS_SERVER_HTTP_PORT=10001
 KAS_SERVER_HTTPS_PORT=10002
 # =============================================
-KAS_OSLC_TEMPLATE_DIR=OSLC
+# KAS_OSLC_TEMPLATE_DIR=OSLC
 #
 # If you want the OSLC Service Provider to read its product template files from the locally
 # installed HUB TEMS, use this variable to specify an alternate template directory. 
@@ -68,27 +68,40 @@ KAS_OSLC_TEMPLATE_DIR=OSLC
 # be installed on the same host, use the same port, username
 # and password and support HTTPS connections.
 # =============================================
-# KAS_SECURITY_SERVICES_ENABLED=YES
+# KAS_SECURITY_SERVICES_ENABLED=NO
 # =============================================
-KAS_CURI_DP_ENABLED=NO
+KAS_CURI_DP_ENABLED=YES
 # =============================================
 # TEMS connection (KAS_CURI_DP_ENABLED is NO)
-KDC_FAMILIES=IP.PIPE PORT:1918 IP use:n SNA use:n IP.SPIPE use:n IP6 use:n IP6.PIPE use:n IP6.SPIPE use:n HTTP:10001
-KAS_HUB_ADDRESS=yangpa.usca.ibm.com
-KAS_HUB_PROTOCOL=ip.pipe
-KAS_HUB_PORT=1918
-# CURI Data Provider connection (KAS_CURI_DP_ENABLED is YES)
-# KDC_FAMILIES=IP.PIPE use:n IP use:n SNA use:n IP.SPIPE use:n IP6 use:n IP6.PIPE use:n IP6.SPIPE use:n HTTP:10001
+# ---------------------------------------------
+# KDC_FAMILIES=IP.PIPE PORT:1918 IP use:n SNA use:n IP.SPIPE use:n IP6 use:n IP6.PIPE use:n IP6.SPIPE use:n HTTP:10001
+# KAS_HUB_ADDRESS=yangpa.usca.ibm.com
+# KAS_HUB_PROTOCOL=ip.pipe
+# KAS_HUB_PORT=1918
 # =============================================
+# CURI Data Provider connection (KAS_CURI_DP_ENABLED is YES)
+# ---------------------------------------------
+KDC_FAMILIES=IP.PIPE use:n IP use:n SNA use:n IP.SPIPE use:n IP6 use:n IP6.PIPE use:n IP6.SPIPE use:n HTTP:10001
 KAS_CURI_DP_URL_PROTOCOL=HTTP
-KAS_CURI_DP_URL_HOSTNAME=yangpa.usca.ibm.com
-KAS_CURI_DP_URL_HTTP_PORT=15210
-KAS_CURI_DP_URL_HTTPS_PORT=15211
+# ---------------------------------------------
+# KAS_CURI_DP_URL_HOSTNAME=yangpa.usca.ibm.com
+# KAS_CURI_DP_URL_HTTP_PORT=15210
+# KAS_CURI_DP_URL_HTTPS_PORT=15211
+# KAS_CURI_DP_AUTH=Yes
+# KAS_CURI_DP_USER=sysadmin
+# KAS_CURI_DP_PASSWORD=password
+# ---------------------------------------------
+KAS_CURI_DP_URL_HOSTNAME=saudade.usca.ibm.com
+KAS_CURI_DP_URL_HTTP_PORT=80
+KAS_CURI_DP_URL_HTTPS_PORT=9443
 KAS_CURI_DP_AUTH=Yes
-KAS_CURI_DP_USER=sysadmin
-KAS_CURI_DP_PASSWORD=password
+KAS_CURI_DP_USER=smadmin
+KAS_CURI_DP_PASSWORD=passw0rd
 # =============================================
 ATTRLIB=ATTRLIB
+KAS_OSLC_TEMPLATE_DIR=OSLC
 # =============================================
-KBB_RAS1=ERROR
+KBB_RAS1=ERROR (UNIT:kascuri ALL) (UNIT:prtpproc ERROR STATE) (UNIT:prnsmgr ALL)
+# (UNIT:kascuri ERROR STATE) (UNIT:prtpproc ERROR STATE)
+# (UNIT:kascuri ALL) (UNIT:pr ALL)
 #
