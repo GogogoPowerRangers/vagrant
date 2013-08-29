@@ -107,10 +107,14 @@ do
         crtv='ServerAccessPoint'
     elif [ ! "$(grep '<crtv:ServiceInstance' $f)" = "" ] ; then
         crtv='ServiceInstance'
+    elif [ ! "$(grep '<crtv:SoftwareModule' $f)" = "" ] ; then
+        crtv='SoftwareModule'
     elif [ ! "$(grep '<crtv:SoftwareServer' $f)" = "" ] ; then
         crtv='SoftwareServer'
     elif [ ! "$(grep '<crtv:StorageVolume' $f)" = "" ] ; then
         crtv='StorageVolume'
+    elif [ ! "$(grep '<crtv:WebSphereServer' $f)" = "" ] ; then
+        crtv='WebSphereServer'
     elif [ ! "$(grep '<rdfs:Container' $f)" = "" ] ; then
         crtv='Container'
     elif [ ! "$(grep '<j.0:KNTAgentProcess' $f)" = "" ] ; then
