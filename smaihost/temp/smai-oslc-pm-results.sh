@@ -16,8 +16,10 @@
 #
 
 # Note: There is too much setup for this test -- need to simplify later
-if [ "$HOSTNAME" = "" ] ; then
-    HOSTNAME=$(hostname); export HOSTNAME
+if [ ! "$1" = "" ] ; then
+    SYSTEM=$1
+elif [ "$SYSTEM" = "" ] ; then
+    SYSTEM=$(hostname); export SYSTEM
 fi
 if [ "$CANDLEHOME" = "" ] ; then
     case $(uname -s) in
@@ -41,18 +43,17 @@ if [ "$KASENV" = "" ] ; then
         elif [ -f $CANDLEHOME/config/as.ini ] ; then
             KASENV=$CANDLEHOME/config/as.ini
         else
-            echo "$CANDLEHOME/bin start/stop kasmain not found"
-            exit 1
+            KASENV=
         fi
         ;;
     esac
 fi
 PATH=$HOME/jsm:$PATH; export PATH
-CDP_DIR=$HOME/temp/$HOSTNAME/CDP
+CDP_DIR=$HOME/temp/$SYSTEM/CDP
 if [ ! -d $CDP_DIR ] ; then
     mkdir -p $CDP_DIR
 fi
-TEMS_DIR=$HOME/temp/$HOSTNAME/TEMS
+TEMS_DIR=$HOME/temp/$SYSTEM/TEMS
 if [ ! -d $TEMS_DIR ] ; then
     mkdir -p $TEMS_DIR
 fi
@@ -62,7 +63,9 @@ if [ ! -d $NC185029_DIR ] ; then
 fi
 
 # Delete Unit Test results
-if [ "$(grep 'KAS_CURI_DP_ENABLED=NO' $KASENV)" = "" ] ; then
+if [ "$KASENV" = "" ] ; then
+    UNIT_DIR=$CDP_DIR
+elif [ "$(grep 'KAS_CURI_DP_ENABLED=NO' $KASENV)" = "" ] ; then
     UNIT_DIR=$CDP_DIR
 else
     UNIT_DIR=$TEMS_DIR
@@ -75,15 +78,17 @@ jsm all
 
 # Copy Unit Test results
 echo "Copy files to $UNIT_DIR"
-cp $KASENV $UNIT_DIR
-rm -f $CANDLEHOME/logs/*.inv
-rm -f $CANDLEHOME/logs/candle_installation.log
-rm -f $CANDLEHOME/logs/itm_config.log
-rm -f $CANDLEHOME/logs/itm_config.trc
-rm -f $CANDLEHOME/logs/itm_synclock.trc
-cp $CANDLEHOME/logs/kasmain* $UNIT_DIR 2> /dev/null
-cp $CANDLEHOME/logs/*_as_*.log $UNIT_DIR
-for f in ${HOSTNAME}*/*
+if [ ! "$KASENV" = "" ] ; then
+    cp $KASENV $UNIT_DIR
+    rm -f $CANDLEHOME/logs/*.inv
+    rm -f $CANDLEHOME/logs/candle_installation.log
+    rm -f $CANDLEHOME/logs/itm_config.log
+    rm -f $CANDLEHOME/logs/itm_config.trc
+    rm -f $CANDLEHOME/logs/itm_synclock.trc
+    cp $CANDLEHOME/logs/kasmain* $UNIT_DIR 2> /dev/null
+    cp $CANDLEHOME/logs/*_as_*.log $UNIT_DIR
+fi
+for f in ${SYSTEM}*/*
 do
     # There are multiple recordType entries; just use the first one
     pc=$(grep recordType $f 2> /dev/null | head -1 | sed -e 's/.*#//' -e 's/".*//')
@@ -97,6 +102,8 @@ do
         crtv='DB2Instance'
     elif [ ! "$(grep '<crtv:IPAddress' $f)" = "" ] ; then
         crtv='IPAddress'
+    elif [ ! "$(grep '<crtv:J2EEApplication' $f)" = "" ] ; then
+        crtv='J2EEApplication'
     elif [ ! "$(grep '<crtv:Location' $f)" = "" ] ; then
         crtv='Location'
     elif [ ! "$(grep '<crtv:MQQueue' $f)" = "" ] ; then
@@ -125,10 +132,10 @@ do
         crtv='UNKNOWN'
     fi
 
-	file=$(basename $f | sed -e 's#\.xml##')
-	echo "Test $UNIT_DIR/$pc-$crtv-$file"
-	cp $f $UNIT_DIR/$pc-$crtv-$file.xml
-	jsm-flat.py $f $UNIT_DIR/$pc-$crtv-$file.txt
+    file=$(basename $f | sed -e 's#\.xml##')
+    echo "Test $UNIT_DIR/$pc-$crtv-$file"
+    cp $f $UNIT_DIR/$pc-$crtv-$file.xml
+    jsm-flat.py $f $UNIT_DIR/$pc-$crtv-$file.txt
 done
 
 #
