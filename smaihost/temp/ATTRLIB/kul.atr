@@ -1,0 +1,434 @@
+// 1130408221129000 KUL/6.2.0 = KUL/01
+//   DO NOT EDIT THIS GENERATED FILE
+//  
+entr AFF
+afid %IBM.STATIC070
+asym UNIX_LOG_ALERT
+atxt "UNIX Logs"
+acod KUL
+//  
+entr ATTR
+name Monitored_Logs.Managed_System
+usag I
+affi "%IBM.STATIC070          0000000001000000000"
+appl KUL
+aplv 01
+stmp 1130408221129000
+cvrm 6.2.0
+lvrm 0.0.0
+tabl ULMONLOG
+mult 1
+samp 3
+doop Y
+colu ORIGINNODE
+type 2
+slng 64
+msid KUL####
+opgr 0
+atid 00030001
+//  
+entr ATTR
+name Monitored_Logs.Log_Path
+affi "%IBM.STATIC070          0000000001000000000"
+colu LOGPATH
+atom Y
+type 2
+slng 256
+msid KUL####
+opgr 2048
+atid 00030002
+//  
+entr ATTR
+name Monitored_Logs.Log_Name
+affi "%IBM.STATIC070          0000000001000000000"
+colu LOGNAME
+atom Y
+type 2
+slng 128
+msid KUL####
+opgr 2048
+atid 00030003
+//  
+entr ATTR
+name Monitored_Logs.Log_Type
+affi "%IBM.STATIC070          0000000001000000000"
+colu LOGTYPE
+atom Y
+type 3
+msid KUL####
+opgr 2048
+atid 00030004
+vale Administrative_Log
+vali A
+vale Error_Log
+vali E
+vale System_Log
+vali S
+vale User_Log
+vali U
+//  
+entr ATTR
+name Monitored_Logs.Monitor_Status
+affi "%IBM.STATIC070          0000000001000000000"
+colu MONSTATUS
+type 2
+slng 32
+msid KUL####
+opgr 2048
+atid 00030005
+//  
+entr ATTR
+name Monitored_Logs.Monitor_Start/Stop_Time
+unit CYYMMDDHHMMSSmmm
+affi "%IBM.STATIC070          0000000001000000000"
+colu MONTIME
+type 2
+slng 16
+msid KUL####
+opgr 2048
+atid 00030006
+//  
+entr ATTR
+name Monitored_Logs.Number_of_Events
+affi "%IBM.STATIC070          0000000001000000000"
+colu NUMEVENTS
+type 4
+mini 0
+maxi 2147483647
+msid KUL####
+opgr 2048
+atid 00030007
+vale Value_Exceeds_Maximum
+vali 2147483647
+//  
+entr ATTR
+name Monitored_Logs.Number_of_Format_Errors
+affi "%IBM.STATIC070          0000000001000000000"
+colu NUMERRORS
+type 4
+mini 0
+maxi 2147483647
+msid KUL####
+opgr 2048
+atid 00030008
+vale Value_Exceeds_Maximum
+vali 2147483647
+//  
+entr ATTR
+name Monitored_Logs.Log_Size
+unit Bytes
+affi "%IBM.STATIC070          0000000001000000000"
+colu LOGSIZE
+type 4
+mini -2
+maxi 2147483647
+msid KUL####
+opgr 2048
+atid 00030009
+vale Not_Collected
+vali -2
+vale Value_Exceeds_Maximum
+vali 2147483647
+//  
+entr ATTR
+name Monitored_Logs.Date_Last_Modified
+unit CYYMMDDHHMMSSmmm
+affi "%IBM.STATIC070          0000000001000000000"
+colu LOGMODDATE
+type 2
+slng 16
+msid KUL####
+opgr 2048
+atid 00030010
+//  
+entr ATTR
+name Monitored_Logs.Debug_Mode
+affi "%IBM.STATIC070          0000000001000000000"
+colu DEBUGMODE
+type 3
+msid KUL####
+opgr 2048
+atid 00030011
+vale No
+vali N
+vale Yes
+vali Y
+//  
+entr ATTR
+name Monitored_Logs.Format_Command
+affi "%IBM.STATIC070          0000000001000000000"
+colu FORMATTER
+type 2
+slng 256
+msid KUL####
+opgr 2048
+atid 00030012
+//  
+entr ATTR
+name Monitored_Logs.Timestamp
+unit CYYMMDDHHMMSSmmm
+affi "%IBM.STATIC070          0000000001000000000"
+colu TIMESTAMP
+type 2
+slng 16
+msid KUL####
+opgr 2048
+atid 00030013
+//  
+entr ATTR
+name Monitored_Logs.Log_Path_U
+affi "%IBM.STATIC070          0000000002000000000"
+colu ULOGPATH
+pkey 0
+atom Y
+type 10
+slng 768
+msid KUL####
+opgr 2048
+atid 00030014
+//  
+entr ATTR
+name Monitored_Logs.Log_Name_U
+affi "%IBM.STATIC070          0000000002000000000"
+colu ULOGNAME
+pkey 1
+atom Y
+type 10
+slng 384
+msid KUL####
+opgr 2048
+atid 00030015
+//  
+entr ATTR
+name Monitored_Logs.Log_Size_64
+unit Bytes
+affi "%IBM.STATIC070          0000000003000000000"
+colu LOGSIZE64
+type 11
+mini -2
+maxi 9223372036854775807
+msid KUL####
+opgr 2048
+atid 00030016
+vale Not_Collected
+vali -2
+vale Value_Exceeds_Maximum
+vali 9223372036854775807
+//  
+entr ATTR
+name Monitored_Logs.Number_of_Format_Errors_64
+affi "%IBM.STATIC070          0000000003000000000"
+colu NUMERRS64
+type 11
+mini -2
+maxi 9223372036854775807
+msid KUL####
+opgr 2048
+atid 00030017
+vale Value_Exceeds_Maximum
+vali 9223372036854775807
+//  
+entr ATTR
+name Monitored_Logs.Number_of_Events_64
+affi "%IBM.STATIC070          0000000003000000000"
+colu NUMEVTS64
+type 11
+mini -2
+maxi 9223372036854775807
+msid KUL####
+opgr 2048
+atid 00030018
+vale Value_Exceeds_Maximum
+vali 9223372036854775807
+//  
+entr ATTR
+name Log_Entries.Managed_System
+usag I
+affi "%IBM.STATIC070          0000000001000000000"
+appl KUL
+aplv 01
+stmp 1130408221129000
+cvrm 6.2.0
+lvrm 0.0.0
+tabl ULLOGENT
+mult 1
+samp 0
+doop Y
+colu ORIGINNODE
+type 2
+slng 64
+msid KUL####
+opgr 0
+atid 00030019
+//  
+entr ATTR
+name Log_Entries.Log_Path
+affi "%IBM.STATIC070          0000000001000000000"
+colu LOGPATH
+atom Y
+type 2
+slng 256
+msid KUL####
+opgr 2048
+atid 00030020
+//  
+entr ATTR
+name Log_Entries.Log_Name
+affi "%IBM.STATIC070          0000000001000000000"
+colu LOGNAME
+atom Y
+type 2
+slng 128
+msid KUL####
+opgr 2048
+atid 00030021
+//  
+entr ATTR
+name Log_Entries.Entry_Time
+affi "%IBM.STATIC070          0000000001000000000"
+colu ENTRYTIME
+type 2
+slng 16
+msid KUL####
+opgr 2048
+atid 00030022
+//  
+entr ATTR
+name Log_Entries.System
+affi "%IBM.STATIC070          0000000001000000000"
+colu ENTRYSYS
+atom Y
+type 2
+slng 32
+msid KUL####
+opgr 2048
+atid 00030023
+//  
+entr ATTR
+name Log_Entries.Source
+affi "%IBM.STATIC070          0000000001000000000"
+colu ENTRYSRC
+atom Y
+type 2
+slng 32
+msid KUL####
+opgr 2048
+atid 00030024
+//  
+entr ATTR
+name Log_Entries.Type
+affi "%IBM.STATIC070          0000000001000000000"
+colu ENTRYTYPE
+atom Y
+type 2
+slng 16
+msid KUL####
+opgr 2048
+atid 00030025
+//  
+entr ATTR
+name Log_Entries.Class
+affi "%IBM.STATIC070          0000000001000000000"
+colu ENTRYCLASS
+atom Y
+type 3
+msid KUL####
+opgr 2048
+atid 00030026
+vale Error_Logger
+vali O
+vale Hardware
+vali H
+vale Software
+vali S
+//  
+entr ATTR
+name Log_Entries.Description
+affi "%IBM.STATIC070          0000000001000000000"
+colu ENTRYDESC
+atom Y
+type 2
+slng 256
+msid KUL####
+opgr 2048
+atid 00030027
+//  
+entr ATTR
+name Log_Entries.Frequency_Threshold
+affi "%IBM.STATIC070          0000000001000000000"
+colu FREQTHRESH
+type 1
+mini 0
+maxi 99999
+msid KUL####
+opgr 2048
+atid 00030028
+//  
+entr ATTR
+name Log_Entries.Period_Threshold
+affi "%IBM.STATIC070          0000000001000000000"
+colu PERIODTHRS
+type 1
+mini 0
+maxi 31622400
+msid KUL####
+opgr 2048
+atid 00030029
+//  
+entr ATTR
+name Log_Entries.Timestamp
+unit CYYMMDDHHMMSSmmm
+affi "%IBM.STATIC070          0000000001000000000"
+colu TIMESTAMP
+pkey 2
+type 2
+slng 16
+msid KUL####
+opgr 2048
+atid 00030030
+//  
+entr ATTR
+name Log_Entries.Log_Path_U
+affi "%IBM.STATIC070          0000000002000000000"
+colu ULOGPATH
+pkey 0
+atom Y
+type 10
+slng 768
+msid KUL####
+opgr 2048
+atid 00030031
+//  
+entr ATTR
+name Log_Entries.Log_Name_U
+affi "%IBM.STATIC070          0000000002000000000"
+colu ULOGNAME
+pkey 1
+atom Y
+type 10
+slng 384
+msid KUL####
+opgr 2048
+atid 00030032
+//  
+entr ATTR
+name Log_Entries.Source_U
+affi "%IBM.STATIC070          0000000002000000000"
+colu UENTRYSRC
+atom Y
+type 10
+slng 96
+msid KUL####
+opgr 2048
+atid 00030033
+//  
+entr ATTR
+name Log_Entries.Description_U
+affi "%IBM.STATIC070          0000000002000000000"
+colu UENTRYDESC
+atom Y
+type 10
+slng 768
+msid KUL####
+opgr 2048
+atid 00030034

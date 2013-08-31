@@ -1,0 +1,338 @@
+<!-- Licensed Materials - Property of IBM 5724-C04 (C) -->
+<!-- Copyright IBM Corporation 2013. All rights reserved. -->
+<!-- US Government Users Restricted Rights - Use, duplication -->
+<!-- or disclosure restricted by GSA ADP Schedule Contract with IBM Corp. -->
+
+<?xml version="1.0" encoding="UTF-8"?>
+<oslc_template xmlns:tmsoslc="http://localhost.com/tmsoslc"
+               xmlns:crtv="http://open-services.net/ns/crtv#"
+               xmlns:im="http://tivoli-OSLC-prototypes/ns/im#">
+  <!-- This section is for query assembly mapping -->
+  <tmsoslc:product>KLZ</tmsoslc:product>
+  <tmsoslc:when>@ checkKLZversion ${VERSION} ${RESERVED} *EQ 1</tmsoslc:when>
+  <tmsoslc:interval minutes="1440"/>
+    <tmsoslc:queries>
+    <tmsoslc:query name="q0" discovery="y">
+      <tmsoslc:where>
+        "SYSTEM.PARMA('NODELIST','${MSYSN}',32) AND ORIGINNODE = '${MSYSN}'"
+      </tmsoslc:where>
+      <tmsoslc:tablename name="LNXMACHIN">
+        <tmsoslc:columnname>BRAND</tmsoslc:columnname>
+        <tmsoslc:columnname>HOSTNAME</tmsoslc:columnname>
+        <tmsoslc:columnname>MACSERIAL</tmsoslc:columnname>
+        <tmsoslc:columnname>MODEL</tmsoslc:columnname>
+        <tmsoslc:columnname>ORIGINNODE</tmsoslc:columnname>
+        <tmsoslc:columnname>TIMESTAMP</tmsoslc:columnname>
+        <tmsoslc:columnname>UUID</tmsoslc:columnname>
+     </tmsoslc:tablename>
+    </tmsoslc:query>
+ 
+    <tmsoslc:query name="q1" discovery="y">
+      <tmsoslc:where>
+        "SYSTEM.PARMA('NODELIST','${MSYSN}',32) AND ORIGINNODE = '${MSYSN}'"
+      </tmsoslc:where>
+      <tmsoslc:tablename name="LNXOSCON">
+        <tmsoslc:columnname>ORIGINNODE</tmsoslc:columnname>
+        <tmsoslc:columnname>OSVER</tmsoslc:columnname>
+        <tmsoslc:columnname>TIMESTAMP</tmsoslc:columnname>
+      </tmsoslc:tablename>
+    </tmsoslc:query>
+
+    <tmsoslc:query name="q2" discovery="n">
+      <tmsoslc:where>
+        "SYSTEM.PARMA('NODELIST','${MSYSN}',32) AND ORIGINNODE = '${MSYSN}' ORDER BY RSS DESC"
+      </tmsoslc:where>
+      <tmsoslc:tablename name="KLZPROC">
+        <tmsoslc:columnname>CMD</tmsoslc:columnname>
+         <tmsoslc:columnname>RSS</tmsoslc:columnname>
+         <tmsoslc:columnname>PID</tmsoslc:columnname>
+         <tmsoslc:columnname>SIZE</tmsoslc:columnname>
+         <tmsoslc:columnname>VMSIZE</tmsoslc:columnname>
+      </tmsoslc:tablename>
+    </tmsoslc:query>
+
+    <tmsoslc:query name="q4" discovery="n">
+      <tmsoslc:where>
+        "SYSTEM.PARMA('NODELIST','${MSYSN}',32) AND ORIGINNODE = '${MSYSN}'"
+      </tmsoslc:where>
+      <tmsoslc:tablename name="KLZVM">
+        <tmsoslc:columnname>MEMTOT</tmsoslc:columnname>
+        <tmsoslc:columnname>VSTOT</tmsoslc:columnname>
+      </tmsoslc:tablename>
+    </tmsoslc:query>
+
+    <tmsoslc:query name="q5" discovery="n">
+      <tmsoslc:where>
+        "SYSTEM.PARMA('NODELIST','${MSYSN}',32) AND ORIGINNODE = '${MSYSN}' ORDER BY CPUPERCENT DESC"
+      </tmsoslc:where>
+      <tmsoslc:tablename name="KLZPROC">
+        <tmsoslc:columnname>CMD</tmsoslc:columnname>
+        <tmsoslc:columnname>CPUPERCENT</tmsoslc:columnname>
+        <tmsoslc:columnname>PID</tmsoslc:columnname>
+     </tmsoslc:tablename>
+    </tmsoslc:query>
+
+    <tmsoslc:query name="q6" discovery="n">
+      <tmsoslc:where>
+        "SYSTEM.PARMA('NODELIST','${MSYSN}',32) AND ORIGINNODE = '${MSYSN}' ORDER BY VMSIZE DESC"
+      </tmsoslc:where>
+      <tmsoslc:tablename name="KLZPROC">
+        <tmsoslc:columnname>CMD</tmsoslc:columnname>
+         <tmsoslc:columnname>VMSIZE</tmsoslc:columnname>
+         <tmsoslc:columnname>PID</tmsoslc:columnname>
+      </tmsoslc:tablename>
+    </tmsoslc:query>
+
+    <tmsoslc:query name="q7" discovery="n">
+      <tmsoslc:where>
+        "SYSTEM.PARMA('NODELIST','${MSYSN}',32) AND ORIGINNODE = '${MSYSN}' ORDER BY PASAGTNAME"
+      </tmsoslc:where>
+      <tmsoslc:tablename name="KLZPASSTAT">
+        <tmsoslc:columnname>INSTNAME</tmsoslc:columnname>
+        <tmsoslc:columnname>PASAGTNAME</tmsoslc:columnname>
+        <tmsoslc:columnname>TIMESTAMP</tmsoslc:columnname>
+        <tmsoslc:columnname>STATUS</tmsoslc:columnname>
+      </tmsoslc:tablename>
+    </tmsoslc:query>
+
+    <tmsoslc:query name="q8" discovery="n">
+      <tmsoslc:where>
+        "SYSTEM.PARMA('NODELIST','${MSYSN}',32) AND ORIGINNODE = '${MSYSN}' ORDER BY DSKUSEDPCT DESC"
+      </tmsoslc:where>
+      <tmsoslc:tablename name="KLZDISK">
+        <tmsoslc:columnname>MOUNTPT</tmsoslc:columnname>
+        <tmsoslc:columnname>DSKUSEDPCT</tmsoslc:columnname>
+      </tmsoslc:tablename>
+    </tmsoslc:query>
+
+    <tmsoslc:query name="q9" discovery="y">
+      <tmsoslc:where>
+       "SYSTEM.PARMA('NODELIST','${MSYSN}',32) AND ORIGINNODE = '${MSYSN}'"
+      </tmsoslc:where>
+      <tmsoslc:tablename name="LNXIPADDR">
+        <tmsoslc:columnname>IPADDRESS</tmsoslc:columnname>
+        <tmsoslc:columnname>INTFNAME</tmsoslc:columnname>
+        <tmsoslc:columnname>DNSNAME</tmsoslc:columnname>
+      </tmsoslc:tablename>
+    </tmsoslc:query>
+
+    <tmsoslc:query name="q10" discovery="y" when="expression=@ checkVersionRange ${VERSION} MIN '06.30.00' *EQ 1">
+      <tmsoslc:where>
+        "SYSTEM.PARMA('NODELIST','${MSYSN}',32) AND ORIGINNODE = '${MSYSN}'"
+      </tmsoslc:where>
+      <tmsoslc:tablename name="LNXMACHIN">
+        <tmsoslc:columnname>VMID</tmsoslc:columnname>
+     </tmsoslc:tablename>
+    </tmsoslc:query>
+    
+    <tmsoslc:query name="formatIPAddr" discovery="y">
+      <tmsoslc:method>"@ KLZformatIPAddress ${q9}"</tmsoslc:method>
+    </tmsoslc:query>
+
+  </tmsoslc:queries>
+
+  <tmsoslc:ResourceDefinition type="ComputerSystem">
+    <im:list>
+      <im:name name="host">
+        <id name="itm:osType rdf:resource" value="@ KLZOSType ${HOSTINFO}" />
+        <id name="crtv:manufacturer" exclude="UNKNOWN" value="@ getOSDPmanufacturer ${q0.BRAND}" />
+        <id name="crtv:model" exclude="UNKNOWN" value="@ getOSDPmodel ${q0.MODEL}" />
+        <id name="crtv:serialNumber" exclude="UNKNOWN,NOTSPECIFIED" value="@ getOSDPserialNumber ${q0.MACSERIAL}" />
+        <id name="crtv:systemBoardUUID" exclude="unknown,zseries" value="@ getOSDPsystemBoardUuid ${q0.UUID}" />
+        <id name="crtv:vmid" exclude="Unknown" value="@ getOSDPvmid ${q10.VMID}" when="@ checkVersionRange ${VERSION} MIN '06.30.00' *EQ 1" />
+        <id name="crtv:fqdn" exclude="NO_DNS_ENTRY" value="@ makeKLZFqdn ${q9} ${q0.HOSTNAME}" />
+        <id name="crtv:shortHostname" exclude="unknown" value="@ makeKLZShorthostname ${q0.HOSTNAME}" />
+        <!-- Naming group list for Linux Intel -->
+        <namingGroupList name="intel" when="@ validateKLZOSType ${RESERVED} *EQ 'intel'">
+           <!-- Naming groups for Linux Intel -->
+           <namingGroup name="intel_mms">
+              <namingMember>crtv:model</namingMember>
+              <namingMember>crtv:manufacturer</namingMember>
+              <namingMember>crtv:serialNumber</namingMember>
+            </namingGroup>
+            <namingGroup name="intel_u">
+              <namingMember>crtv:systemBoardUUID</namingMember>
+            </namingGroup>
+           <namingGroup name="intel_fqdn">
+              <namingMember>crtv:fqdn</namingMember>
+           </namingGroup>
+        </namingGroupList>
+        <!-- Naming group list for Linux PowerPC and zLinux  -->
+        <namingGroupList name="z_ppc" when="@ validateKLZOSType ${RESERVED} *EQ 'z_ppc'">
+           <!-- Naming group for Linux PowerPC and zLinux  -->
+           <namingGroup name="z_ppc_mmsv">
+              <namingMember>crtv:model</namingMember>
+              <namingMember>crtv:manufacturer</namingMember>
+              <namingMember>crtv:serialNumber</namingMember>
+              <namingMember>crtv:vmid</namingMember>
+           </namingGroup>
+           <namingGroup name="z_ppc_fqdn">
+              <namingMember>crtv:fqdn</namingMember>
+           </namingGroup>
+        </namingGroupList>
+        <metrics>health</metrics>
+      </im:name>
+    </im:list>
+  </tmsoslc:ResourceDefinition>
+
+  <tmsoslc:ResourceDefinition type="IPAddress">
+    <im:list>
+      <im:name name="IP_Resource">
+       <id name="crtv:contextAddressSpace rdf:resource" value="${formatIPAddr.CONTEXTAS}" />
+       <id name="crtv:address" exclude="0.0.0.0,0:0:0:0:0:0:0:0,::" value="${formatIPAddr.IPADDRESS}" />
+       <namingGroupList name="IP_address">
+          <namingGroup name="IP_address_group">
+             <namingMember>crtv:contextAddressSpace</namingMember>
+             <namingMember>crtv:address</namingMember>
+           </namingGroup>
+       </namingGroupList>
+       <relationship type="crtv:dependsOn">
+          <target>
+            <resourceType>ComputerSystem</resourceType>
+            <resourceName>host</resourceName>
+            <scope>this</scope>
+          </target>
+       </relationship>
+      </im:name>
+    </im:list>
+  </tmsoslc:ResourceDefinition>
+
+  <metrics class="health">
+    <record type="ComputerSystem">
+      <metric name="itm:topProcessesforCPUUtil">
+        <pattern type="sequence" name="topCPU-seq" limit="5" />
+        <reference type="crtv:Process" about="${q5.CMD}-${q5.PID}"  name="cpuUtilProcess" />
+        <widget name="bar" order="1" width="200px" height="325px" title="CPU Utilization: Top 5 processes" bundle-key="cpu_util_title" bundle-name="LZBundle" />
+      </metric>
+
+      <metric name="itm:topProcessesforVirtMemUtil">
+        <pattern type="sequence" name="topVirtMem-seq" limit="5" />
+        <reference type="crtv:Process" about="${q6.CMD}-${q6.PID}" name="virtMem" />
+        <widget name="bar" order="2" width="200px" height="325px" title="Virtual Memory Utilization: Top 5 processes" bundle-key="vmem_util_title" bundle-name="LZBundle" />
+      </metric>
+  
+      <metric name="itm:topProcessesForRealMemUtil">
+        <pattern type="sequence" name="topRealMem-seq" limit="5" />
+        <reference type="crtv:Process" about="${q2.CMD}-${q2.PID}"  name="realMem" />
+        <widget name="bar" order="3" width="200px" height="325px" title="Real Memory Utilization: Top 5 processes" bundle-key="rmem_util_title" bundle-name="LZBundle" />
+      </metric> 
+
+      <metric name="itm:disksByPercentageSpaceUsed" >
+        <pattern type="sequence" name="diskSpaceUsed-seq"  limit="5" />
+        <reference type="crtv:StorageVolume" about="${q8.MOUNTPT}" name="diskUsed" />
+        <widget name="bar" order="4" width="200px" height="325px" title="Disk Space Used: Top 5 filesystems" bundle-key="disk_used_title" bundle-name="LZBundle" />
+      </metric>  
+
+      <metric name="itm:monitoringAgentsByStatus" >
+        <pattern type="custom" name="monitoringAgentsStatus-seq">
+		  <columnname name="${q6.STATUS}">
+			<orderby>Not_Found</orderby>
+			<orderby>Unknown</orderby>
+			<orderby>Not_Configured</orderby>
+		    <orderby>Stopped</orderby>
+			<orderby>Start_Pending</orderby>
+			<orderby>Stop_Pending</orderby>
+			<orderby>Manually_Stopped</orderby>
+			<orderby>Running</orderby>
+		  </columnname>		  
+		</pattern>
+        <reference type="http://xmlns.com/foaf/0.1/Agent" about="${q7.PASAGTNAME}-${q7.INSTNAME}" name="agent" />
+        <widget name="simple-table" order="5" width="200px" height="325px" title="Installed Agents" bundle-key="installed_agents_title" bundle-name="LZBundle" />    
+      </metric>
+    </record>
+
+    <reference name="cpuUtilProcess" pmr="y">
+      <sub-reference property-name="ems:observes" reference-type="ems:Measure" reference-value="${q5.CMD}-${q5.PID}-cpuUtil" reference-name="cpuUtilMetric" />
+      <id name="dcterms:title" value="${q5.CMD}" displayValue="${q5.CMD}" column-name="Process" orderBy="2" axis="y" axis-type="string" column-bundle-key="process_title" column-bundle-name="LZBundle" />
+      <id name="crtv:processId" value="${q5.PID}" />
+    </reference> 
+    
+    <reference name="cpuUtilMetric"> 
+      <id name="dcterms:title" value="CPU Utilization" bundle-key="cpu_util_metric" bundle-name="LZBundle" />
+      <id name="ems:numericValue" datatype="http://www.w3.org/2001/XMLSchema#double" 
+          value="@ KLZCPUPercent ${q5.CPUPERCENT}" 
+          displayValue="@ KLZCPUPercent ${q5.CPUPERCENT} display" 
+          exclude="Not_Available,Not_Collected,0.00,-2.00,Not_Available%,Not_Collected%,0.00%,-2.00%" 
+          orderBy="1" axis="x" axis-type="number" axis-range="0-100"
+          column-name="Utilization" column-bundle-key="utilization_title" column-bundle-name="LZBundle" /> 
+      <id name="ems:unitOfMeasure rdf:resource" value="http://dbpedia.org/resource/Percentage" />
+      <id name="ems:metric rdf:resource" value="http://open-services.net/ns/perfmon#CpuUsed" />
+    </reference>
+
+    <reference name="virtMem" pmr="y">
+      <sub-reference property-name="ems:observes" reference-type="ems:Measure" reference-value="${q6.CMD}-${q6.PID}-virtMem" reference-name="memVirtMetric" />
+      <id name="dcterms:title" value="${q6.CMD}" column-name="Process" orderBy="2" axis="y" axis-type="string" column-bundle-key="process_title" column-bundle-name="LZBundle" />
+      <id name="crtv:processId" value="${q6.PID}" />
+    </reference> 
+
+    <reference name="memVirtMetric"> 
+      <id name="dcterms:title" value="Virtual Memory Utilization" bundle-key="virt_mem_metric" bundle-name="LZBundle" />
+      <id name="ems:numericValue" datatype="http://www.w3.org/2001/XMLSchema#double" 
+          value="@ KLZGetVMemory ${q6.VMSIZE} ${q4.VSTOT}" 
+          displayValue="@ KLZGetVMemory ${q6.VMSIZE} ${q4.VSTOT} display"
+          exclude="Not_Available,Not_Collected,0.00,Not_Available%,Not_Collected%,0.00%"
+          orderBy="1" axis="x" axis-type="number" axis-range="0-100" 
+          column-name="Utilization" column-bundle-key="utilization_title" column-bundle-name="LZBundle" /> 
+      <id name="ems:unitOfMeasure rdf:resource" value="http://dbpedia.org/resource/Percentage" />
+      <id name="ems:metric rdf:resource" value="http://open-services.net/ns/perfmon#VirtualMemoryUsed" />
+    </reference>
+
+    <reference name="realMem" pmr="y">
+      <sub-reference property-name="ems:observes" reference-type="ems:Measure" reference-value="${q2.CMD}-${q2.PID}-realMem" reference-name="memRealMetric" />
+      <id name="dcterms:title" value="${q2.CMD}" column-name="Process" orderBy="2" axis="y" axis-type="string" column-bundle-key="process_title" axis-bundle-name="LZBundle" />
+      <id name="crtv:processId" value="${q2.PID}" />
+    </reference> 
+
+    <reference name="memRealMetric"> 
+      <id name="dcterms:title" value="Real Memory Utilization" bundle-key="real_mem_metric" bundle-name="LZBundle" />
+      <id name="ems:numericValue" datatype="http://www.w3.org/2001/XMLSchema#double" 
+          value="@ KLZGetMemory ${q2.RSS} ${q4.MEMTOT} ${q2.SIZE} ${q2.VMSIZE}" 
+          displayValue="@ KLZGetMemory ${q2.RSS} ${q4.MEMTOT} ${q2.SIZE} ${q2.VMSIZE} display"
+          exclude="Not_Available,Not_Collected,0.00,Not_Available%,Not_Collected%,0.00%" 
+          orderBy="1" axis="x" axis-type="number" axis-range="0-100" 
+          column-name="Utilization" column-bundle-key="utilization_title" column-bundle-name="LZBundle"/> 
+      <id name="ems:unitOfMeasure rdf:resource" value="http://dbpedia.org/resource/Percentage" />
+      <id name="ems:metric rdf:resource" value="http://open-services.net/ns/perfmon#RealMemoryUsed" />
+    </reference>
+
+    <reference name="diskUsed" pmr="y">
+      <sub-reference  property-name="ems:observes" reference-type="ems:Measure" reference-value="diskUsed-${q8.MOUNTPT}" reference-name="diskUsedMetric" />
+      <id name="dcterms:title" value="${q8.MOUNTPT}" displayValue="${q8.MOUNTPT}" column-name="Mount Point" axis="y" orderBy="2" axis-type="string" column-bundle-key="mount_point_title" column-bundle-name="LZBundle" />
+    </reference> 
+
+    <reference name="diskUsedMetric"> 
+      <id name="dcterms:title" value="Percentage space used"  bundle-key="disk_used_metric" bundle-name="LZBundle" />
+      <id name="ems:numericValue" datatype="http://www.w3.org/2001/XMLSchema#double" 
+          value="@ KLZDiskPercent ${q8.DSKUSEDPCT}" 
+          displayValue="@ KLZDiskPercent ${q8.DSKUSEDPCT} display" 
+          exclude="Not_Available,Not_Collected,0,Not_Available%,Not_Collected%,0%"
+          orderBy="1" axis="x" axis-type="number" axis-range="0-100" 
+          column-name="Utilization" column-bundle-key="utilization_title" column-bundle-name="LZBundle" /> 
+      <id name="ems:unitOfMeasure rdf:resource" value="http://dbpedia.org/resource/Percentage" />
+      <id name="ems:metric rdf:resource" value="http://open-services.net/ns/perfmon#DiskSpaceUsed" />
+    </reference>
+
+    <reference name="agent" pmr="y">     
+      <id name="dcterms:title" value="${q7.PASAGTNAME}" displayValue="${q7.PASAGTNAME}" column="1" column-name="Agent" column-bundle-key="agent-column-title" column-bundle-name="LZBundle" orderBy="2" />
+      <id name="pm:availabilityStatus rdf:resource" value="@ AgentStatus ${q7.STATUS}" useurl="y" displayValue="@ AgentStatus ${q7.STATUS} display" bundle-key="@ AgentStatus ${q7.STATUS} bundlekey"
+          bundle-name="LZBundle" column="2" column-name="Availability status" column-bundle-key="avail_status_title" column-bundle-name="LZBundle" orderBy="1" />
+      <id name="itm:instanceName" value="${q7.INSTNAME}" />
+    </reference>
+  </metrics>  
+  
+  <method library="klzutil.bin" name="KLZCPUPercent" />
+  <method library="klzutil.bin" name="KLZDiskPercent" />
+  <method library="klzutil.bin" name="KLZGetVMemory" />
+  <method library="klzutil.bin" name="KLZGetMemory" />
+  <method library="klzutil.bin" name="KLZOSType"/>
+  <method library="klzutil.bin" name="KLZformatIPAddress"/>
+  <method library="klzutil.bin" name="validateKLZOSType"/>
+  <method library="klzutil.bin" name="checkKLZversion"/>
+  <method library="klzutil.bin" name="makeKLZFqdn"/>
+  <method library="klzutil.bin" name="makeKLZShorthostname"/>
+  <method library="klzutil.bin" name="KLZmakeUpAIPAddress"/>
+  <method library="klzutil.bin" name="KLZmakeUpASystemBoardUuid"/>
+  <method library="klzutil.bin" name="KLZmakeUpASerialNumber"/>
+</oslc_template>
+
+

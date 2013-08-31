@@ -1,0 +1,625 @@
+//---------------------------------------------------------------------------------
+// ****                                                                        ****
+// ****                      IBM CONFIDENTIAL                                  ****
+// ****                                                                        ****
+// ****                    OCO SOURCE MATERIALS                                ****
+// ****                                                                        ****
+// ****                      OMEGAMON PLATFORM                                 ****
+// ****                                                                        ****
+// ****             (C) COPYRIGHT IBM CORP. 2012                               ****
+// ****                                                                        ****
+// ****     THE SOURCE CODE FOR THIS PROGRAM IS NOT PUBLISHED OR               ****
+// ****   OTHERWISE DIVESTED OF ITS TRADE SECRETS, IRRESPECTIVE OF             ****
+// ****    WHAT HAS BEEN DEPOSITED WITH THE U.S. COPYRIGHT OFFICE.             ****
+// ****                                                                        ****
+//---------------------------------------------------------------------------------
+//
+// Module:  klzutil.lib
+//
+// Purpose: Agent specific utilities for discovery and metric conversion
+//
+//---------------------------------------------------------------------------------
+set copyright = "Licensed Materials - Property of IBM 5724-C04 (C) Copyright IBM Corporation 2013. All rights reserved. US Government Users Restricted Rights - Use, duplication or disclosure restricted by GSA ADP Schedule Contract with IBM Corp. ";
+
+#include "libs/kasras.lib"
+
+//---------------------------------------------------------------------------------
+// Function: KLZOSType
+//
+// Purpose:  Post data collection formatting for LZ specific ostypes
+//
+// Inputs:   input  - HOSTINFO OS information
+//
+// Outputs:  value  - Returned OSDP format osType.
+//
+//---------------------------------------------------------------------------------
+
+Function KLZOSType value input
+{
+    KASDEBUG_Entry("KLZOSType");
+
+    if (strcontains(input,"Linux") == 1)
+    {
+        value = "Linux";
+    }
+    else
+    {
+        value = input;
+        KASDEBUG_Printf(KASDEBUG_ERROR,"ERROR: OS Type <%s> may not be properly formatted.", input);
+    }
+    value = makeOSType(value);
+
+    KASDEBUG_Exit("KLZOSType");
+}
+
+
+//---------------------------------------------------------------------------------
+// Function: KLZformatIPAddress
+//
+// Purpose:  Return a table of ip addresses that comply to the OSDP IPAddress shape
+//
+// Inputs:   tab        - Table of ip addresses to make OSDP-compliant
+//
+// Output:   result     - Table of OSDP-compliant addresses.  Non-compliant ip
+//                        addresses are not included in the output table.
+//
+//---------------------------------------------------------------------------------
+Function KLZformatIPAddress result tab
+{
+    KASDEBUG_Entry("KLZformatIPAddress");
+
+    settype result table;
+    settype row dictionary;
+
+    KASDEBUG_Printf(KASDEBUG_STATE,"tab has <%s> elements ", tab.elements);
+
+    lastone = tab.elements - 1;
+
+    step index from 0 to lastone by 1
+    {
+        index     = tointeger(index);
+        value     = tab[index].IPADDRESS;
+        interface = tab[index].INTFNAME;
+        interface = strlwr(interface);
+
+        if (memcmp(interface,"lo", 2) == 0)
+        {
+           KASDEBUG_Printf(KASDEBUG_STATE,"skipping interface <%s> ", interface);
+           continue;
+        }
+
+        formatted = "";
+        context_as = "";
+
+        formatted = formatOSDPIPAddress(value);
+
+        if (formatted != "")
+        {
+            row.IPADDRESS = formatted;
+            context_as = formatOSDPContextAddressSpace(formatted);
+            row.CONTEXTAS = context_as;
+
+            KASDEBUG_Printf(KASDEBUG_STATE,"adding values addr <%s> and context <%s> to row", formatted, context_as);
+
+            tableappend result row;
+        }
+    }
+
+    KASDEBUG_Printf(KASDEBUG_STATE,"Returned table has <%s> elements", result.elements);
+
+    KASDEBUG_Exit("KLZformatIPAddress");
+}
+
+//---------------------------------------------------------------------------------
+// Function: validateKLZOSType
+//
+// Purpose:  Return "intel" for Linux running on Intel architecture, either 32 or 64 bit
+//                  "z_ppc" for either zLinux or Linux PPC and OS agent version 6.3.0+
+//
+// Inputs:   input - RESERVED column from INODESTS table information
+//           e.g.  <RESERVED>A=00:ls3266;C=06.30.00.00:ls3266;G=06.30.00.00:ls3266;</RESERVED>
+//                  where li6 and lx8 prefixes mean intel (32/64 bit), ls3 prefix is zLinux and lpp is PPC
+//
+// Outputs:  value  - one of valid strings above, or invalid
+//
+//---------------------------------------------------------------------------------
+
+Function validateKLZOSType value input 
+{
+    KASDEBUG_Entry("validateKLZOSType");
+
+    value = "invalid";
+
+    if (strcontains(input,"li6") == 1 || strcontains(input,"lx8") == 1)
+    {
+        value = "intel";
+    }
+    else if (strcontains(input,"ls3") == 1 || strcontains(input,"lpp") == 1)
+    {
+        value = "z_ppc"; 
+    }
+    
+    KASDEBUG_Printf(KASDEBUG_STATE,"Reserved <%s>   output: <%s>", input,  value);
+
+    KASDEBUG_Exit("validateKLZOSType");
+}
+
+//---------------------------------------------------------------------------------
+// Function: checkKLZversion
+//
+// Purpose:  To process or not the given Linux agent
+// Inputs:   version    - Version to check
+//
+//           input      - RESERVED column from INODESTS table information
+//           e.g.  <RESERVED>A=00:ls3266;C=06.30.00.00:ls3266;G=06.30.00.00:ls3266;</RESERVED>
+//                  where li6 and lx8 prefixes mean intel (32/64 bit), ls3 prefix is zLinux and lpp is PPC
+//
+// Output:   value      - Returns True if version is valid otherwise returns False.
+//
+//---------------------------------------------------------------------------------
+
+Function checkKLZversion value version input
+{
+    KASDEBUG_Entry("checkKLZversion");
+
+    value   = False;
+
+    if (strcontains(input,"li6") == 1 || strcontains(input,"lx8") == 1)
+    {
+        value = checkVersionRange(version,"MIN","06.22.00");
+    }
+    else if (strcontains(input,"ls3") == 1 || strcontains(input,"lpp") == 1)
+    {
+        value = checkVersionRange(version,"MIN","06.30.00");
+    }
+    
+    KASDEBUG_Printf(KASDEBUG_STATE,"version <%s> - input <%s> - output: <%s>", version, input,  value);
+
+    KASDEBUG_Exit("checkKLZversion");
+
+}
+
+//---------------------------------------------------------------------------------
+// Function: KLZDiskPercent
+//
+// Purpose:  Returns disk percent utilization with percent sign if parm option 
+//           'display' is given.
+//
+// Inputs:   input      - Raw value from KLZ agent
+//
+//           parm       - If parm set to 'display' then return percent sign after
+//                        value. 
+//
+// Outputs:  value      - Returned converted value
+//
+//---------------------------------------------------------------------------------
+
+Function KLZDiskPercent value input parm
+{
+    KASDEBUG_Entry("KLZDiskPercent");
+    
+    value = input; 
+    
+    if (parm == "display")
+    {
+        value = value "%";
+    }
+    
+    KASDEBUG_Printf(KASDEBUG_STATE,"Using input <%s>. Value is <%s>", input,value);
+    
+    KASDEBUG_Exit("KLZDiskPercent");
+}
+
+//---------------------------------------------------------------------------------
+// Function: KLZCPUPercent
+//
+// Purpose:  Return calculated CPU percent.
+//
+// Inputs:   input      - Raw value from KLZ agent
+//
+//           parm       - If parm set to 'display' then return percent sign after 
+//                        value.
+//
+// Outputs:  value      - Returned converted value
+//
+//---------------------------------------------------------------------------------
+
+Function KLZCPUPercent value input parm
+{
+    KASDEBUG_Entry("KLZCPUPercent");
+    value = input;
+    
+    if (parm == "display")
+    {
+        value = value "%";
+    }
+
+    KASDEBUG_Printf(KASDEBUG_STATE,"Using input <%s>. Value is <%s>", input,value);
+    
+    KASDEBUG_Exit("KLZCPUPercent");
+}
+
+//---------------------------------------------------------------------------------
+// Function: KLZGetMemory
+//
+// Purpose:  Return calculated Real Memory percent utilization.
+//
+// Inputs:   input      - Raw value from KLZ agent
+//
+//           totmem     - Raw total memory
+//
+//           parm       - If parm set to 'display' then return percent sign after 
+//                        value.
+//
+// Outputs:  value      - Returned converted value
+//
+//---------------------------------------------------------------------------------
+
+Function KLZGetMemory value input totmem pages kbytes parm
+{
+    KASDEBUG_Entry("KLZGetMemory");
+
+    value = "Not_Available";
+
+    if ((missingInput(input) == 1) || (missingInput(totmem) == 1) || (totmem == 0))
+    {
+        KASDEBUG_Printf(KASDEBUG_STATE,"Invalid argument. Input: <%s> Total memory: <%s>", input, totmem);
+        KASDEBUG_Exit("KLZGetMemory");
+    }
+
+    if ( strcheck(input[0],"dig") > 0)
+    {
+       if ((missingInput(pages) == 1) || (missingInput(kbytes) == 1) || (strcheck(pages,"dig") <= 0) ||  (strcheck(kbytes,"dig") <= 0))
+       {
+           KASDEBUG_Print(KASDEBUG_ERROR,"ERROR: Cannot compute pagesize. Using default of 4 Kb");
+           pagesize = 4;
+       }
+       else
+       {
+           pagesize = kbytes / pages;
+           KASDEBUG_Printf(KASDEBUG_STATE,"Applying pagesize: <%s> Kb", pagesize);
+       }
+       totmem = totmem * 1024;
+       value  = (input * pagesize / totmem) * 100;
+       value  = formatMetricPrecision(value,2);
+    }
+    else
+    {
+        value = input;
+    }
+
+    if (parm == "display")
+    {
+        value = value "%";
+    }
+
+    KASDEBUG_Printf(KASDEBUG_STATE,"Using input <%s> pages with total memory <%s> Kb. Value is <%s>",input,totmem,value);
+   
+    KASDEBUG_Exit("KLZGetMemory");
+}
+
+
+//---------------------------------------------------------------------------------
+// Function: KLZGetVMemory
+//
+// Purpose:  Return calculated Virtual Memory percent utilization.
+//
+// Inputs:   input      - Raw value from KLZ agent
+//
+//           totmem     - Raw total memory
+//
+//           parm       - If parm set to 'display' then return percent sign after
+//                        value.
+//
+// Outputs:  value      - Returned converted value
+//
+//---------------------------------------------------------------------------------
+
+Function KLZGetVMemory value input totmem parm
+{
+    KASDEBUG_Entry("KLZGetVMemory");
+
+    value = "Not_Available";
+
+    if ((missingInput(input) == 1) || (missingInput(totmem) == 1) || (totmem == 0))
+    {
+        KASDEBUG_Printf(KASDEBUG_STATE,"Invalid argument. Input: <%s> Total memory: <%s>", input, totmem);
+        KASDEBUG_Exit("KLZGetVMemory");
+    }
+
+    if ( strcheck(input[0],"dig") > 0)
+    {
+        totmem = totmem * 1024;
+        value  = (input / totmem) * 100;
+        value  = formatMetricPrecision(value,2);
+    }
+    else
+    {
+        value = input;
+    }
+
+    if (parm == "display")
+    {
+        value = value "%";
+    }
+
+    KASDEBUG_Printf(KASDEBUG_STATE,"Using input <%s> Kb with total memory <%s> Kb. Value is <%s>",input,totmem,value);
+        
+    KASDEBUG_Exit("KLZGetVMemory");
+}
+
+//---------------------------------------------------------------------------------
+// Function: makeKLZFqdn
+//
+// Purpose:  Search for the machine fully qualified domain name
+//
+// Inputs:   tab        - Raw table of ip addresses and related information from the agent
+//           hostname   - the raw hostname from the agent (either short or not)
+//
+// Output:   value     - The fully qualified domain name found or "NO_DNS_ENTRY" if none found
+//
+//---------------------------------------------------------------------------------
+Function makeKLZFqdn value tab hostname
+{
+    KASDEBUG_Entry("makeKLZFqdn");
+
+    value = "NO_DNS_ENTRY";
+
+    KASDEBUG_Printf(KASDEBUG_STATE,"Input hostname is <%s>.", hostname);
+
+    temp = tokens(hostname,".");
+    if (temp.elements >= 3)
+    {
+       value = strlwr(hostname);
+    }
+    else
+    {
+        KASDEBUG_Printf(KASDEBUG_STATE,"IP address table has <%s> elements.", tab.elements);
+
+        lastone = tab.elements - 1;
+
+        step index from 0 to lastone by 1
+        {
+           index     = tointeger(index);
+           fqdn      = tab[index].DNSNAME;
+           hostname  = strlwr(hostname);
+           fqdn      = strlwr(fqdn);
+
+           if (strcontains(fqdn, hostname) == 1)
+           {
+              temp = tokens(fqdn,".");
+              if (temp.elements >= 3)
+              {
+                  KASDEBUG_Printf(KASDEBUG_STATE,"found <%s> in <%s>", hostname,fqdn);
+
+                  value = fqdn;
+                  break;
+              }
+           }
+        }
+    }
+    KASDEBUG_Printf(KASDEBUG_STATE,"Returning value <%s>", value);
+
+    KASDEBUG_Exit("makeKLZFqdn");
+}
+
+//---------------------------------------------------------------------------------
+// Function: makeKLZShorthostname
+//
+// Purpose:  Return machine short hostname
+//
+// Inputs:   hostname   - the raw hostname from the agent (either short or not)
+//
+// Output:   value     - The short hostname
+//
+//---------------------------------------------------------------------------------
+Function makeKLZShorthostname value hostname
+{
+    KASDEBUG_Entry("makeKLZShorthostname");
+
+    KASDEBUG_Printf(KASDEBUG_STATE,"Input hostname is <%s>.", hostname);
+
+    temp = tokens(hostname,".");
+    if (temp.elements > 1)
+    {
+       value = strlwr(temp[0]);
+    }
+    else
+    {
+       value = strlwr(hostname);
+    }
+
+    KASDEBUG_Printf(KASDEBUG_STATE,"Returning value <%s>", value);
+
+    KASDEBUG_Exit("makeKLZShorthostname");
+}
+
+//---------------------------------------------------------------------------------
+// Function: KLZmakeUpASerialNumber
+//
+// Purpose:  Make up a unique serial number for linux farm agents
+//
+//
+// Input:  serial number
+//
+// Output: unique serial number
+//
+//---------------------------------------------------------------------------------
+Function KLZmakeUpASerialNumber value input msn
+{
+    KASDEBUG_Entry("KLZmakeUpASerialNumber");
+    temp=input msn;
+    value=getOSDPserialNumber(temp);
+    KASDEBUG_Exit("KLZmakeUpASerialNumber");
+}
+
+//---------------------------------------------------------------------------------
+// Function: KLZmakeUpASystemBoardUUID
+//
+// Purpose:  Make up a unique system board UUID for Linux farm agents
+//
+//
+// Input:  system board uuid
+//         msn
+//
+// Output: unique serial number
+//
+//---------------------------------------------------------------------------------
+Function KLZmakeUpASystemBoardUuid value input msn
+{
+    KASDEBUG_Entry("KLZmakeUpASystemBoardUuid");
+    temp=input msn;
+    value=getOSDPsystemBoardUuid(temp);
+    KASDEBUG_Exit("KLZmakeUpASystemBoardUuid");
+}
+
+//---------------------------------------------------------------------------------
+// Function: KLZmakeUpAIPAddress
+//
+// Purpose:  Return a table of made up ip addresses.
+//
+// Inputs:   tab        - Table of ip addresses to make OSDP-compliant
+//
+// Output:   result     - Table of OSDP-compliant addresses.  Non-compliant ip
+//                        addresses are not included in the output table.
+//
+//---------------------------------------------------------------------------------
+Function KLZmakeUpAIPAddress result tab msn
+{
+    KASDEBUG_Entry("KLZmakeUpAIPAddress");
+    settype result table;
+    settype row dictionary;
+
+    KASDEBUG_Printf(KASDEBUG_STATE,"tab has <%s> elements msn <%s>", tab.elements, msn);
+
+    hex3 = "";
+    hex4 = "";
+    hex5 = "";
+    farm = "";
+
+    msnparts = tokens(msn,":");
+    totalparts = msnparts.elements;
+
+    if (totalparts != 3)
+    {
+       KASDEBUG_Printf(KASDEBUG_STATE,"Skipping generated unique farm address from msn <%s>.", msn);
+    }
+    else
+    {
+        hex3 = msnparts[0];
+        farm = msnparts[1];
+        hashedfarm = hash(farm);
+
+        strleft hex4 hashedfarm 4;
+        strright hex5 hashedfarm 4;
+
+    }
+
+    lastone = tab.elements - 1;
+
+    step index from 0 to lastone by 1 {
+        index     = tointeger(index);
+        value     = tab[index].IPADDRESS;
+        interface = tab[index].INTFNAME;
+        interface = strlwr(interface);
+
+        if (memcmp(interface,"lo", 2) == 0)
+        {
+           KASDEBUG_Printf(KASDEBUG_STATE,"skipping interface <%s> ", interface);
+
+           continue;
+        }
+
+        formatted = "";
+        context_as = "";
+
+        if (hex3 != "")
+        {
+            hex6 =  tointeger(index);
+            value = "2001:0db8:370:7334:" hex4 ":" hex5 ":" hex3 ":" hex6;
+            KASDEBUG_Printf(KASDEBUG_STATE,"generated ip address: <%s>", value);
+         }
+
+        formatted = formatOSDPIPAddress(value);
+
+        if (formatted != "")
+        {
+            row.IPADDRESS = formatted;
+            context_as = formatOSDPContextAddressSpace(formatted);
+            row.CONTEXTAS = context_as;
+
+            KASDEBUG_Printf(KASDEBUG_STATE,"adding values addr <%s> and context <%s> to row", formatted, context_as);
+
+            tableappend result row;
+        }
+    }
+
+    KASDEBUG_Printf(KASDEBUG_STATE,"Returned table has <%s> elements", result.elements);
+
+    KASDEBUG_Exit("KLZmakeUpAIPAddress");
+}
+
+//---------------------------------------------------------------------------------
+// Function: KLZmakeUpAFqdn
+//
+// Purpose:  Search for the machine fully qualified domain name
+//
+// Inputs:   tab        - Raw table of ip addresses and related information from the agent
+//           hostname   - the raw hostname from the agent (either short or not)
+//
+// Output:   value     - The fully qualified domain name found or "NO_DNS_ENTRY" if none found
+//
+//---------------------------------------------------------------------------------
+Function KLZmakeUpAFqdn value tab hostname msn
+{
+    KASDEBUG_Entry("KLZmakeUpAFqdn");
+    value = "NO_DNS_ENTRY";
+	
+    msnparts = tokens(msn,":");
+    totalparts = msnparts.elements;
+
+    if (totalparts != 3)
+    {
+       KASDEBUG_Printf(KASDEBUG_STATE,"skipping generated unique farm fqdn from msn <%s> ", msn);
+    }
+    else
+    {
+        hex3 = msnparts[0];
+        farm = msnparts[1];
+        hashedfarm = hash(farm);
+    
+		
+        temp = tokens(hostname,".");
+        if (temp.elements >= 3)
+        {
+           val = strlwr(hostname);
+           concat value hex3 hashedfarm val;
+        }
+        else
+        {
+    	    lastone = tab.elements - 1;
+    	
+    	    step index from 0 to lastone by 1
+    	    {
+    	        index     = tointeger(index);
+    	        fqdn      = tab[index].DNSNAME;
+    	        hostname  = strlwr(hostname);
+    	        fqdn      = strlwr(fqdn);
+    	
+    	        if (strcontains(fqdn, hostname) == 1)
+    	        {
+                        temp = tokens(fqdn,".");
+    	            if (temp.elements >= 3)
+    	            {
+    	                value = hex3 hashedfarm fqdn;
+    	                break;
+    	            }
+    	        }
+    	    }
+        }
+    }
+    KASDEBUG_Exit();
+
+    return;
+}
+

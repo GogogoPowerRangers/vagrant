@@ -1,0 +1,386 @@
+//---------------------------------------------------------------------------------
+// ****                                                                        ****
+// ****                      IBM CONFIDENTIAL                                  ****
+// ****                                                                        ****
+// ****                    OCO SOURCE MATERIALS                                ****
+// ****                                                                        ****
+// ****                      OMEGAMON PLATFORM                                 ****
+// ****                                                                        ****
+// ****             (C) COPYRIGHT IBM CORP. 2013                               ****
+// ****                                                                        ****
+// ****     THE SOURCE CODE FOR THIS PROGRAM IS NOT PUBLISHED OR               ****
+// ****   OTHERWISE DIVESTED OF ITS TRADE SECRETS, IRRESPECTIVE OF             ****
+// ****    WHAT HAS BEEN DEPOSITED WITH THE U.S. COPYRIGHT OFFICE.             ****
+// ****                                                                        ****
+//---------------------------------------------------------------------------------
+
+set copyright = "Licensed Materials - Property of IBM 5724-V09 (C) Copyright IBM Corporation 2013. All rights reserved. US Government Users Restricted Rights - Use, duplication or disclosure restricted by GSA ADP Schedule Contract with IBM Corp.";
+
+//
+// Module:  kmqutil.lib
+//
+// Purpose: KMQ Agent specific utilities for discovery and metric conversion
+//
+//---------------------------------------------------------------------------------
+
+Function KMQ_QueueManagerStatus value input parm
+{ 	
+	set notRunStatus = "http://open-services.net/ns/perfmon#NotRunning";
+	set runStatus = "http://open-services.net/ns/perfmon#Running";
+	set unknownStatus = "http://open-services.net/ns/perfmon#Unknown";
+	
+	value = unknownStatus;
+
+	//*ENUM:          n/a=-1
+	//*ENUM:          Starting=1
+	//*ENUM:          Running=2
+	//*ENUM:          Quiescing=3
+	//*ENUM:          Stopping=4
+	//*ENUM:          Standby=5
+	//*ENUM:          Stopped=0
+	
+	if ( input == "Starting" )
+	{
+		value = runStatus;
+	}
+	else if ( input == "Running" )
+	{
+		value = runStatus;
+	}
+	else if ( input == "Quiescing" )
+	{
+		value = notRunStatus;
+	}
+	else if ( input == "Stopping" )
+	{
+		value = notRunStatus;
+	}
+	else if ( input == "Standby" )
+	{
+		value = runStatus;
+	}
+	else if ( input == "Stopped" )
+	{
+		value = notRunStatus;
+	}
+	else if ( input == "n/a" )
+	{
+		value = unknownStatus;
+	}
+	else 
+	{
+		value = unknownStatus;
+	}
+	
+	
+	if (parm == "display")
+    {
+		value = input;
+    }
+
+	if (parm == "bundlekey")
+    {
+        if (value == notRunStatus)
+		{
+			value = "notrunning_key";
+		}
+		else if (value == runStatus)
+		{
+			value = "running_key";
+		}
+		else
+		{
+			value = "unknown_key";
+		}		
+    }
+	
+	
+    if (properties.print == "y")
+    {
+        retcode = rasprint("KMQ_QueueManagerStatus: Using input [%s]. Value is %s",
+                           input,value);
+    }
+       
+    return;
+}
+
+
+Function KMQ_CommandServerStatus value input parm
+{ 	
+	set notRunStatus = "http://open-services.net/ns/perfmon#NotRunning";
+	set runStatus = "http://open-services.net/ns/perfmon#Running";
+	set unknownStatus = "http://open-services.net/ns/perfmon#Unknown";
+	
+	value = unknownStatus;
+	
+	//*ENUM:          n/a=-1
+	//*ENUM:          Stopped=0
+	//*ENUM:          Starting=1
+	//*ENUM:          Running=2
+	//*ENUM:          Stopping=3
+	//*ENUM:          Retrying=4
+	//*ENUM:          Waiting=5
+
+	
+	if ( input == "Starting" )
+	{
+		value = runStatus;
+	}
+	else if ( input == "Running" )
+	{
+		value = runStatus;
+	}
+	else if ( input == "Waiting" )
+	{
+		value = runStatus;
+	}
+	else if ( input == "Stopping" )
+	{
+		value = notRunStatus;
+	}
+	else if ( input == "Retrying" )
+	{
+		value = notRunStatus;
+	}
+	else if ( input == "Stopped" )
+	{
+		value = notRunStatus;
+	}
+	else if ( input == "n/a" )
+	{
+		value = unknownStatus;
+	}
+	else 
+	{
+		value = unknownStatus;
+	}
+	
+	
+	if (parm == "display")
+    {
+		value = input;
+    }
+
+	if (parm == "bundlekey")
+    {
+        if (value == notRunStatus)
+		{
+			value = "notrunning_key";
+		}
+		else if (value == runStatus)
+		{
+			value = "running_key";
+		}
+		else
+		{
+			value = "unknown_key";
+		}		
+    }
+	
+	
+    if (properties.print == "y")
+    {
+        retcode = rasprint("KMQ_CommandServerStatus: Using input [%s]. Value is %s",
+                           input,value);
+    }
+       
+    return;
+}
+
+Function KMQ_ChannelInitStatus value input parm
+{ 	
+	set notRunStatus = "http://open-services.net/ns/perfmon#NotRunning";
+	set runStatus = "http://open-services.net/ns/perfmon#Running";
+	set unknownStatus = "http://open-services.net/ns/perfmon#Unknown";
+	
+	value = unknownStatus;
+	
+	//*ENUM:          n/a=-1
+	//*ENUM:          Stopped=0
+	//*ENUM:          Starting=1
+	//*ENUM:          Running=2
+	//*ENUM:          Stopping=3
+	//*ENUM:          Retrying=4
+
+	
+	if ( input == "Starting" )
+	{
+		value = runStatus;
+	}
+	else if ( input == "Running" )
+	{
+		value = runStatus;
+	}
+	else if ( input == "Stopping" )
+	{
+		value = notRunStatus;
+	}
+	else if ( input == "Retrying" )
+	{
+		value = notRunStatus;
+	}
+	else if ( input == "Stopped" )
+	{
+		value = notRunStatus;
+	}
+	else if ( input == "n/a" )
+	{
+		value = unknownStatus;
+	}
+	else 
+	{
+		value = unknownStatus;
+	}
+	
+	
+	if (parm == "display")
+    {
+		value = input;
+    }
+
+	if (parm == "bundlekey")
+    {
+        if (value == notRunStatus)
+		{
+			value = "notrunning_key";
+		}
+		else if (value == runStatus)
+		{
+			value = "running_key";
+		}
+		else
+		{
+			value = "unknown_key";
+		}		
+    }
+	
+	
+    if (properties.print == "y")
+    {
+        retcode = rasprint("KMQ_ChannelInitStatus: Using input [%s]. Value is %s",
+                           input,value);
+    }
+       
+    return;
+}
+
+Function KMQ_DisplayPercentage value input parm
+{
+    value = input;
+	
+	if (input == "n/a")
+	{
+		//value = "n/a";
+		value = "";      //this require ITM version >= d3029a
+	}
+    
+	if (parm == "display")
+	{
+		if (input != "n/a") 
+		{
+			value = value "%";
+		}
+		else
+		{
+			//value = "n/a";
+			value = "";   //this require ITM version >= d3029a
+		}
+	}
+
+    if (properties.print == "y")
+    {
+        retcode = rasprint("KMQ_DisplayPercentage: Using input [%s]. Value is %s",
+                           input,value);
+    }
+       
+    return;
+}
+
+Function KMQ_PutGetStatus value input parm
+{ 	
+
+	set enabledStatus = "http://jazz.net/ns/ism/perfmon/itm#enabled" ;
+	set disabledStatus = "http://jazz.net/ns/ism/perfmon/itm#disabled" ; 
+	set unknownStatus = "http://open-services.net/ns/perfmon#Unknown";
+	
+	value = unknownStatus;
+	
+	//*ENUM:          Enabled=0
+	//*ENUM:          Disabled=1
+	
+	if ( input == "Disabled" )
+	{
+		value = disabledStatus;
+	}
+	else if ( input == "Enabled" )
+	{
+		value = enabledStatus;
+	}
+	else 
+	{
+		value = unknownStatus;
+	}
+	
+	
+	if (parm == "display")
+    {
+		value = input;
+	}
+
+	if (parm == "bundlekey")
+	{
+		if (value == enabledStauts)
+		{
+			value = "enabled_key";
+		}
+		else if (value == disabledStatus)
+		{
+			value = "disabled_key";
+		}
+		else
+		{
+			value = "unknown_key";
+		}		
+    }
+	
+	
+    if (properties.print == "y")
+    {
+        retcode = rasprint("KMQ_PutGetStatus: Using input [%s]. Value is %s",
+                           input,value);
+    }
+       
+    return;
+}
+
+Function KMQ_Display value input parm
+{
+    value = input;
+	
+	if (input == "n/a")
+	{
+		//value = "n/a";
+		value = "";      //this require ITM version >= d3029a
+	}
+    
+	if (parm == "display")
+	{
+		if (input != "n/a") 
+		{
+			value = input;
+		}
+		else
+		{
+			//value = "n/a";
+			value = "";   //this require ITM version >= d3029a
+		}
+	}
+
+    if (properties.print == "y")
+    {
+        retcode = rasprint("KMQ_Display: Using input [%s]. Value is %s",
+                           input,value);
+    }
+       
+    return;
+}

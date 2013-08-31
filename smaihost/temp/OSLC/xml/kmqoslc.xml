@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Licensed Materials - Property of IBM 5724-V09 (C) -->
+<!-- Copyright IBM Corporation 2013. All rights reserved. -->
+<!-- US Government Users Restricted Rights - Use, duplication -->
+<!-- or disclosure restricted by GSA ADP Schedule Contract with IBM Corp.-->
+<oslc_template xmlns:tmsoslc="http://localhost.com/tmsoslc"
+               xmlns:crtv="http://open-services.net/ns/crtv#"
+               xmlns:im="http://tivoli-OSLC-prototypes/ns/im#">
+	<tmsoslc:product>KMQ</tmsoslc:product>
+	<tmsoslc:when>@ checkVersionRange ${VERSION} MIN '07.10.00' *EQ 1</tmsoslc:when>
+	<tmsoslc:interval minutes="60"/>
+	<tmsoslc:queries>
+		<tmsoslc:query name="QMCURSTAT" discovery="y">
+			<tmsoslc:where>
+				"SYSTEM.PARMA('NODELIST','${MSYSN}',32) AND ORIGINNODE = '${MSYSN}'"
+			</tmsoslc:where>
+			<tmsoslc:tablename name="QMCURSTAT">
+				<tmsoslc:columnname>ORIGINNODE</tmsoslc:columnname>
+				<tmsoslc:columnname>QMNAME</tmsoslc:columnname>
+				<tmsoslc:columnname>QMSTATUS</tmsoslc:columnname>
+				<tmsoslc:columnname>CHINIT</tmsoslc:columnname>
+				<tmsoslc:columnname>CMDSERV</tmsoslc:columnname>
+				<tmsoslc:columnname>CURCHLSPCT</tmsoslc:columnname>
+				<tmsoslc:columnname>ACTCHLSPCT</tmsoslc:columnname>
+				<tmsoslc:columnname>CH_SVRCONN</tmsoslc:columnname>
+				<tmsoslc:columnname>DLQDEPTH</tmsoslc:columnname>
+				<tmsoslc:columnname>HIGHQCNT</tmsoslc:columnname>
+				<tmsoslc:columnname>TOTXMSGS</tmsoslc:columnname>
+			</tmsoslc:tablename>
+		</tmsoslc:query>
+		<tmsoslc:query name="QMQ_DATA_DISCOVERY" discovery="y">
+			<tmsoslc:where>
+				"SYSTEM.PARMA('NODELIST','${MSYSN}',32) AND ORIGINNODE = '${MSYSN}' ORDER BY QNAME"
+			</tmsoslc:where>
+			<tmsoslc:tablename name="QMQ_DATA">
+				<tmsoslc:columnname>ORIGINNODE</tmsoslc:columnname>
+				<tmsoslc:columnname>QNAME</tmsoslc:columnname>
+			</tmsoslc:tablename>
+		</tmsoslc:query>
+		<tmsoslc:query name="QMQ_DATA" discovery="n">
+			<tmsoslc:where>
+				"QNAME = '${crtv:name}' AND SYSTEM.PARMA('NODELIST','${MSYSN}',32) AND ORIGINNODE = '${MSYSN}'"
+			</tmsoslc:where>
+			<tmsoslc:tablename name="QMQ_DATA">
+				<tmsoslc:columnname>ORIGINNODE</tmsoslc:columnname>
+				<tmsoslc:columnname>QTYPE</tmsoslc:columnname>
+				<tmsoslc:columnname>QNAME</tmsoslc:columnname>
+				<tmsoslc:columnname>QCURDEP</tmsoslc:columnname>
+				<tmsoslc:columnname>QPCTFULL</tmsoslc:columnname>
+				<tmsoslc:columnname>QIPOPENS</tmsoslc:columnname>
+				<tmsoslc:columnname>QOPOPENS</tmsoslc:columnname>
+				<tmsoslc:columnname>QGET_INH</tmsoslc:columnname>
+				<tmsoslc:columnname>QPUT_INH</tmsoslc:columnname>
+			</tmsoslc:tablename>
+		</tmsoslc:query>
+	</tmsoslc:queries>
+
+	<tmsoslc:ResourceDefinition type="SoftwareServer">
+		<im:list>
+			<im:name name="KMQ_QueueManager">
+				<id name="crtv:manufacturer" value="IBM"/>
+				<id name="crtv:name" value="${QMCURSTAT.QMNAME}" />
+				<id name="crtv:runsOn rdf:resource">
+				  <value>
+					<resourceType>ComputerSystem</resourceType>
+					<match from="IPADDRESSRAW" to="IPADDRESSRAW"/>
+				  </value>
+				</id>
+				<id name="rdf:type rdf:resource" value="http://open-services.net/ns/crtv#MQQueueManager"/>
+				<namingGroupList name="KMQ_SoftwareServer_Grouplist">
+					<namingGroup name="KMQ_SoftwareServer_Group1">
+						<namingMember>crtv:name</namingMember>
+						<namingMember>crtv:runsOn</namingMember>
+					</namingGroup>
+				</namingGroupList>
+				<metrics>KMQ_QueueManager_Health</metrics>		
+			</im:name>
+		</im:list>
+	</tmsoslc:ResourceDefinition>
+	
+	<tmsoslc:ResourceDefinition type="SoftwareModule">
+		<im:list>
+			<im:name name="KMQ_Queue">
+				<id name="crtv:name" value="${QMQ_DATA_DISCOVERY.QNAME}" />
+				<id name="crtv:fileName" value="${QMQ_DATA_DISCOVERY.QNAME}" />
+				<id name="crtv:deployedTo rdf:resource">
+				  <value>
+					<resourceType>SoftwareServer</resourceType>
+					<resourceName>KMQ_QueueManager</resourceName>
+					<scope>this</scope>
+				  </value>
+				</id>
+				<id name="rdf:type rdf:resource" value="http://open-services.net/ns/crtv#MQQueue"/>
+				<namingGroupList name="KMQ_SoftwareModule_Grouplist">
+					<namingGroup name="KMQ_SoftwareModule_Group1">
+						<namingMember>crtv:name</namingMember>
+						<namingMember>crtv:fileName</namingMember>
+						<namingMember>crtv:deployedTo</namingMember>
+					</namingGroup>
+				</namingGroupList>
+				<identity name="MQQueueIdentity">
+					<attributeGroup>QMQ_DATA</attributeGroup>
+					<primaryKey keyNumber="1" attributeName="QNAME" attributeValue="${QMQ_DATA_DISCOVERY.QNAME}" />
+				</identity>
+				<metrics>KMQ_Queue_Health</metrics>
+			</im:name>
+		</im:list>
+	</tmsoslc:ResourceDefinition>
+
+	<!-- Queue Manager Health: Single Instance, applies to KMQ_QueueManager(SoftwareServer) -->
+	<metrics class="KMQ_QueueManager_Health">
+		<record type="SoftwareServer">
+			<!-- Queue Manager Status: Single instance per queue manager, applies to KMQ_QueueManager(SoftwareServer) -->
+			<metric name="pm:availabilityStatus">
+				<id name="pm:availabilityStatus rdf:resource" value="@ KMQ_QueueManagerStatus ${QMCURSTAT.QMSTATUS}" useurl="y" displayValue="@ KMQ_QueueManagerStatus ${QMCURSTAT.QMSTATUS} display"  bundle-key="@ KMQ_QueueManagerStatus ${QMCURSTAT.QMSTATUS} bundlekey" bundle-name="MQBundle"/>
+				<pattern type="none"/>
+				<widget name="text" order="1" title="Queue Manager Status"/>
+			</metric>
+
+			<!-- Command Server Status: Single instance per queue manager, applies to KMQ_QueueManager(SoftwareServer) -->
+			<metric name="itm:commandServerStatus">
+				<id name="itm:commandServerStatus rdf:resource" value="@ KMQ_CommandServerStatus ${QMCURSTAT.CMDSERV}" useurl="y" displayValue="@ KMQ_CommandServerStatus ${QMCURSTAT.CMDSERV} display"  bundle-key="@ KMQ_CommandServerStatus ${QMCURSTAT.CMDSERV} bundlekey" bundle-name="MQBundle"/>
+				<pattern type="none"/>
+				<widget name="text" order="2" title="Command Server Status" bundle-key="command_server_status_title" bundle-name="MQBundle"/>
+			</metric>
+		
+			<!-- Channel Initiator Status: Single instance per queue manager, applies to KMQ_QueueManager(SoftwareServer) -->
+			<metric name="itm:channelInitiatorStatus">
+				<id name="itm:channelInitiatorStatus rdf:resource" value="@ KMQ_ChannelInitStatus ${QMCURSTAT.CHINIT}" useurl="y" displayValue="@ KMQ_ChannelInitStatus ${QMCURSTAT.CHINIT} display"  bundle-key="@ KMQ_ChannelInitStatus ${QMCURSTAT.CHINIT} bundlekey" bundle-name="MQBundle"/>
+				<pattern type="none"/>
+				<widget name="text" order="3" title="Channel Initiator Status" bundle-key="channel_initiator_status_title" bundle-name="MQBundle"/>
+			</metric>  
+		  
+		  <!-- Percent Maximum Channels: Single instance per queue manager, applies to KMQ_QueueManager(SoftwareServer) -->
+			<metric name="ems:observes">
+				<pattern type="none"/>
+				<reference type="ems:Measure" about="percentmaxchls" name="percent-maximum-channels-metric"/>
+				<widget name="bar" order="4" width="200px" height="325px" title="Percent Maximum Channels" bundle-key="percent_maximum_channels_title" bundle-name="MQBundle"/>
+			</metric>
+			
+			<!-- Percent Maximum Active Channels: Single instance per queue manager, applies to KMQ_QueueManager(SoftwareServer) -->
+			<metric name="ems:observes">
+				<pattern type="none"/>
+				<reference type="ems:Measure" about="percentactmaxchls" name="percent-maximum-active-channels-metric"/>
+				<widget name="bar" order="5" width="200px" height="325px" title="Percent Maximum Active Channels" bundle-key="percent_maximum_active_channels_title" bundle-name="MQBundle"/>
+			</metric>
+			
+			<!-- Server Connections: Single instances  per queue manager, applies to KMQ_Queue(SoftwareModule) -->
+			<metric name="ems:observes">
+				<pattern type="none"/>
+				<reference type="ems:Measure" about="serverconns" name="server-connections-metric"/>
+				<widget name="bar" order="6" width="200px" height="325px" title="Server Connections" bundle-key="server_connections_title" bundle-name="MQBundle"/>
+			</metric>
+			
+			<!-- DLQ Depth: Single instances  per queue manager, applies to KMQ_Queue(SoftwareModule) -->
+			<metric name="ems:observes">
+				<pattern type="none"/>
+				<reference type="ems:Measure" about="dlqdepth" name="dlq-depth-metric"/>
+				<widget name="bar" order="7" width="200px" height="325px" title="DLQ Depth" bundle-key="dlq_depth_title" bundle-name="MQBundle"/>
+			</metric>
+			
+			<!-- High Depth Queue Count: Single instances  per queue manager, applies to KMQ_Queue(SoftwareModule) -->
+			<metric name="ems:observes">
+				<pattern type="none"/>
+				<reference type="ems:Measure" about="highdepthqcnt" name="high-depth-queue-count-metric"/>
+				<widget name="bar" order="8" width="200px" height="325px" title="High Depth Queue Count" bundle-key="high_depth_queue_count_title" bundle-name="MQBundle"/>
+			</metric>
+			
+			<!-- Number of messages that are on transmission queues: Single instances  per queue manager, applies to KMQ_Queue(SoftwareModule) -->
+			<metric name="ems:observes">
+				<pattern type="none"/>
+				<reference type="ems:Measure" about="totalxmitqmsg" name="total-transmission-queue-messages-metric"/>
+				<widget name="bar" order="9" width="200px" height="325px" title="Total Transmission Queue Messages" bundle-key="total_transmission_queue_messages_title" bundle-name="MQBundle"/>
+			</metric>
+		</record>
+		<reference name="percent-maximum-channels-metric">
+			<id name="dcterms:title" value="Percent Maximum Channels" bundle-key="percent-maximum-channels-metric-title" bundle-name="MQBundle"/>
+			<id name="ems:numericValue" datatype="http://www.w3.org/2001/XMLSchema#double" value="@ KMQ_DisplayPercentage ${QMCURSTAT.CURCHLSPCT}" displayValue="@ KMQ_DisplayPercentage ${QMCURSTAT.CURCHLSPCT} display" axis="x" axis-type="number" axis-range="0-100"/>
+			<id name="ems:unitOfMeasure rdf:resource" value="http://dbpedia.org/resource/Percentage"/>
+			<id name="ems:metric rdf:resource" value="http://jazz.net/ns/ism/perfmon/itm#MaxChannelsUsed"/>
+		</reference>
+		<reference name="percent-maximum-active-channels-metric">
+			<id name="dcterms:title" value="Percent Maximum Active Channels" bundle-key="percent-maximum-active-channels-metric-title" bundle-name="MQBundle"/>
+			<id name="ems:numericValue" datatype="http://www.w3.org/2001/XMLSchema#double" value="@ KMQ_DisplayPercentage ${QMCURSTAT.ACTCHLSPCT}" displayValue="@ KMQ_DisplayPercentage ${QMCURSTAT.ACTCHLSPCT} display" axis="x" axis-type="number" axis-range="0-100"/>
+			<id name="ems:unitOfMeasure rdf:resource" value="http://dbpedia.org/resource/Percentage"/>
+			<id name="ems:metric rdf:resource" value="http://jazz.net/ns/ism/perfmon/itm#MaxActiveChannelsUsed"/>
+		</reference>
+		<reference name="server-connections-metric">
+			<id name="dcterms:title" value="Server Connections" bundle-key="server-connections-metric-title" bundle-name="MQBundle"/>
+			<id name="ems:numericValue" datatype="http://www.w3.org/2001/XMLSchema#double" value="${QMCURSTAT.CH_SVRCONN}" displayValue="${QMCURSTAT.CH_SVRCONN}" axis="x" axis-type="number"/>
+			<id name="ems:unitOfMeasure rdf:resource" value="http://dbpedia.org/resource/Count_data"/>
+			<id name="ems:metric rdf:resource" value="http://open-services.net/ns/perfmon#RemoteInboundConnections"/>
+		</reference>
+		<reference name="dlq-depth-metric">
+			<id name="dcterms:title" value="DLQ Depth" bundle-key="dlq-depth-metric-title" bundle-name="MQBundle"/>
+			<id name="ems:numericValue" datatype="http://www.w3.org/2001/XMLSchema#double" value="${QMCURSTAT.DLQDEPTH}" displayValue="${QMCURSTAT.DLQDEPTH}" axis="x" axis-type="number"/>
+			<id name="ems:unitOfMeasure rdf:resource" value="http://dbpedia.org/resource/Count_data"/>
+			<id name="ems:metric rdf:resource" value="http://jazz.net/ns/ism/perfmon/itm#DlqDepth"/>
+		</reference>
+		<reference name="high-depth-queue-count-metric">
+			<id name="dcterms:title" value="High Depth Queue Count" bundle-key="high-depth-queue-count-metric-title" bundle-name="MQBundle"/>
+			<id name="ems:numericValue" datatype="http://www.w3.org/2001/XMLSchema#double" value="${QMCURSTAT.HIGHQCNT}" displayValue="${QMCURSTAT.HIGHQCNT}" axis="x" axis-type="number"/>
+			<id name="ems:unitOfMeasure rdf:resource" value="http://dbpedia.org/resource/Count_data"/>
+			<id name="ems:metric rdf:resource" value="http://open-services.net/ns/perfmon#HighDepthQueueCount"/>
+		</reference>
+		<reference name="total-transmission-queue-messages-metric">
+			<id name="dcterms:title" value="Total Transmission Queue Messages" bundle-key="total-transmission-queue-messages-metric-title" bundle-name="MQBundle"/>
+			<id name="ems:numericValue" datatype="http://www.w3.org/2001/XMLSchema#double" value="${QMCURSTAT.TOTXMSGS}" displayValue="${QMCURSTAT.TOTXMSGS}" axis="x" axis-type="number"/>
+			<id name="ems:unitOfMeasure rdf:resource" value="http://dbpedia.org/resource/Count_data"/>
+			<id name="ems:metric rdf:resource" value="http://open-services.net/ns/perfmon#MessageCount"/>
+		</reference>
+	</metrics>
+	
+	<metrics class="KMQ_Queue_Health">
+		<record type="SoftwareModule">
+			<!-- Percentage full of the queue: Mutliple instances per queue manager, applies to KMQ_Queue(SoftwareModule) -->
+			<metric name="ems:observes">
+				<pattern type="none"/>
+				<reference type="ems:Measure" about="qpercentagefull" name="queue-percentage-full-metric"/>
+				<widget name="bar" order="1" width="200px" height="325px" title="Percentage Full" bundle-key="queue_percentage_full_title" bundle-name="MQBundle"/>
+			</metric>
+			<!-- Current depth of the queue: Mutliple instances  per queue manager, applies to KMQ_Queue(SoftwareModule) -->
+			<metric name="ems:observes">
+				<pattern type="none"/>
+				<reference type="ems:Measure" about="qcurrentdepth" name="queue-current-depth-metric"/>
+				<widget name="bar" order="2" width="200px" height="325px" title="Current Depth" bundle-key="queue_current_depth_title" bundle-name="MQBundle"/>
+			</metric>
+			<!-- Number of handles opens for input: Mutliple instances  per queue manager, applies to KMQ_Queue(SoftwareModule) -->
+			<metric name="ems:observes">
+				<pattern type="none"/>
+				<reference type="ems:Measure" about="inputopens" name="input-opens-metric"/>
+				<widget name="bar" order="3" width="200px" height="325px" title="Input Opens" bundle-key="input_opens_title" bundle-name="MQBundle"/>
+			</metric>
+			<!-- Number of handles opens for output: Mutliple instances  per queue manager, applies to KMQ_Queue(SoftwareModule) -->
+			<metric name="ems:observes">
+				<pattern type="none"/>
+				<reference type="ems:Measure" about="outputopens" name="output-opens-metric"/>
+				<widget name="bar" order="4" width="200px" height="325px" title="Output Opens" bundle-key="output_opens_title" bundle-name="MQBundle"/>
+			</metric>
+			<!-- Put status: Mutliple instances  per queue manager, applies to KMQ_Queue(SoftwareModule) -->
+			<metric name="itm:putStatus">
+				<id name="itm:putStatus rdf:resource" value="@ KMQ_PutGetStatus ${QMQ_DATA.QPUT_INH}" useurl="y" displayValue="@ KMQ_PutGetStatus ${QMQ_DATA.QPUT_INH} display"  bundle-key="@ KMQ_PutGetStatus ${QMQ_DATA.QPUT_INH} bundlekey" bundle-name="MQBundle"/>
+				<pattern type="none"/>
+				<widget name="text" order="5" title="Put Status"  bundle-key="put_status_title" bundle-name="MQBundle"/>
+			</metric>  
+			<!-- Gut status: Mutliple instances  per queue manager, applies to KMQ_Queue(SoftwareModule) -->
+			<metric name="itm:getStatus">
+				<id name="itm:getStatus rdf:resource" value="@ KMQ_PutGetStatus ${QMQ_DATA.QGET_INH}" useurl="y" displayValue="@ KMQ_PutGetStatus ${QMQ_DATA.QGET_INH} display"  bundle-key="@ KMQ_PutGetStatus ${QMQ_DATA.QGET_INH} bundlekey" bundle-name="MQBundle"/>
+				<pattern type="none"/>
+				<widget name="text" order="6" title="Get Status"  bundle-key="get_status_title" bundle-name="MQBundle"/>
+			</metric>  
+		</record>
+		<reference name="queue-percentage-full-metric">
+			<id name="dcterms:title" value="Percentage full" bundle-key="queue-percentage-full-metric-title" bundle-name="MQBundle"/>
+			<id name="ems:numericValue" datatype="http://www.w3.org/2001/XMLSchema#double" value="@ KMQ_DisplayPercentage ${QMQ_DATA.QPCTFULL}" displayValue="@ KMQ_DisplayPercentage ${QMQ_DATA.QPCTFULL} display" axis="x" axis-type="number" axis-range="0-100"/>
+			<id name="ems:unitOfMeasure rdf:resource" value="http://dbpedia.org/resource/Percentage"/>
+			<id name="ems:metric rdf:resource" value="http://open-services.net/ns/perfmon#QueueFull"/>
+		</reference>
+		<reference name="queue-current-depth-metric">
+			<id name="dcterms:title" value="Current depth" bundle-key="queue-current-depth-metric-title" bundle-name="MQBundle"/>
+			<id name="ems:numericValue" datatype="http://www.w3.org/2001/XMLSchema#double" value="@ KMQ_Display ${QMQ_DATA.QCURDEP}" displayValue="@ KMQ_Display ${QMQ_DATA.QCURDEP} display" axis="x" axis-type="number"/>
+			<id name="ems:unitOfMeasure rdf:resource" value="http://dbpedia.org/resource/Count_data"/>
+			<id name="ems:metric rdf:resource" value="http://open-services.net/ns/perfmon#QueueDepth"/>			
+		</reference>
+		<reference name="input-opens-metric">
+			<id name="dcterms:title" value="Input Opens" bundle-key="input-opens-metric-title" bundle-name="MQBundle"/>
+			<id name="ems:numericValue" datatype="http://www.w3.org/2001/XMLSchema#double" value="@ KMQ_Display ${QMQ_DATA.QIPOPENS}" displayValue="@ KMQ_Display ${QMQ_DATA.QIPOPENS} display" axis="x" axis-type="number"/>
+			<id name="ems:unitOfMeasure rdf:resource" value="http://dbpedia.org/resource/Count_data"/>
+			<id name="ems:metric rdf:resource" value="http://jazz.net/ns/ism/perfmon/itm#InputHandles"/>
+		</reference>
+		<reference name="output-opens-metric">
+			<id name="dcterms:title" value="Output Opens" bundle-key="output-opens-metric-title" bundle-name="MQBundle"/>
+			<id name="ems:numericValue" datatype="http://www.w3.org/2001/XMLSchema#double" value="@ KMQ_Display ${QMQ_DATA.QOPOPENS}" displayValue="@ KMQ_Display ${QMQ_DATA.QOPOPENS} display" axis="x" axis-type="number"/>
+			<id name="ems:unitOfMeasure rdf:resource" value="http://dbpedia.org/resource/Count_data"/>
+			<id name="ems:metric rdf:resource" value="http://jazz.net/ns/ism/perfmon/itm#OutputHandles"/>
+		</reference>
+	</metrics>
+
+	<method library="kmqutil.lib" name="KMQ_QueueManagerStatus" />
+	<method library="kmqutil.lib" name="KMQ_CommandServerStatus" />
+	<method library="kmqutil.lib" name="KMQ_ChannelInitStatus" />
+	<method library="kmqutil.lib" name="KMQ_DisplayPercentage" />
+	<method library="kmqutil.lib" name="KMQ_PutGetStatus" />
+	<method library="kmqutil.lib" name="KMQ_Display" />
+</oslc_template>

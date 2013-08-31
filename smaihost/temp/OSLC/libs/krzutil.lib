@@ -1,0 +1,217 @@
+//---------------------------------------------------------------------------------
+// ****                                                                        ****
+// ****	Licensed Materials - Property of IBM 5724-V09 (C) ****
+// ****	Copyright IBM Corporation 2013. All rights reserved. ****
+// ****	US Government Users Restricted Rights - Use, duplication ****
+// ****	or disclosure restricted by GSA ADP Schedule Contract with IBM Corp. ****
+// ****                                                                        ****
+// ****                                                                        ****
+//---------------------------------------------------------------------------------
+
+set copyright = "Licensed Materials - Property of IBM 5724-V09 (C) Copyright IBM Corporation 2013. All rights reserved. US Government Users Restricted Rights - Use, duplication or disclosure restricted by GSA ADP Schedule Contract with IBM Corp.";
+
+// Module:  krzutil.lib
+//
+// Purpose: KRZ Agent specific utilities for discovery and metric conversion
+//
+//---------------------------------------------------------------------------------
+
+
+Function KRZ_DisplayPercentage value input parm
+{
+    value = input;
+	
+	if (input == "")
+	{
+		value = 0;
+	}
+	else if (input == "-1")
+	{
+		value = 0;
+	}
+    
+    if (parm == "display")
+    {
+        value = value "%";
+    }
+
+    if (properties.print == "y")
+    {
+        retcode = rasprint("KRZ_DisplayPercentage: Using input %s. Value is %s",
+                           input,value);
+    }
+       
+    return;
+}
+
+Function KRZ_PerfMonInstanceStatus value input parm
+{ 	
+	set notRunStatus = "http://open-services.net/ns/perfmon#NotRunning";
+	set runStatus = "http://open-services.net/ns/perfmon#Running";
+	set unknownStatus = "http://open-services.net/ns/perfmon#Unknown";
+	
+	value = unknownStatus;
+    
+	// for some reason using logical equals is causing compile errors
+	
+	if (strcontains(input, "OPEN") == 1 )
+	{
+		value = runStatus;
+	}
+	else if (strcontains(input, "OPEN MIGRATE") == 1 )
+	{
+		value = notRunStatus;
+	}
+	else if (strcontains(input, "MOUNTED") == 1 )
+	{
+		value = notRunStatus;
+	}
+	else if (strcontains(input, "STARTED") == 1 )
+	{
+		value = runStatus;
+  }
+  else if (strcontains(input, "OFFLINE") == 1 )
+  {
+    value = notRunStatus;
+  }
+	else 
+	{
+		value = unknownStatus;
+	}
+	
+	
+	if (parm == "display")
+    {
+        if (value == notRunStatus)
+		{
+			value = "Not running";
+		}
+		else if (value == runStatus)
+		{
+			value = "Running";
+		}
+		else
+		{
+			value = "Unknown";
+		}		
+    }
+	
+	if (parm == "bundlekey")
+    {
+        if (value == notRunStatus)
+		{
+			value = "notrunning_key";
+		}
+		else if (value == runStatus)
+		{
+			value = "running_key";
+		}
+		else
+		{
+			value = "unknown_key";
+		}		
+    }
+    
+    if (properties.print == "y")
+    {
+        retcode = rasprint("KRZ_PerfMonInstanceStatus: Using input %s. Value is %s",
+                           input,value);
+    }
+       
+    return;
+}
+
+Function KRZ_InstanceStatus value input parm
+{ 	
+	set OpenStatus = "http://jazz.net/ns/ism/perfmon/itm#Open";
+	set OpenMigrateStatus = "http://jazz.net/ns/ism/perfmon/itm#OpenMigrate";
+	set MountedStatus = "http://jazz.net/ns/ism/perfmon/itm#Mounted";
+	set StartedStatus = "http://jazz.net/ns/ism/perfmon/itm#Started";
+	set OfflineStatus = "http://jazz.net/ns/ism/perfmon/itm#Offline";
+	    
+	// for some reason using logical equals is causing compile errors
+	
+	if (strcontains(input, "OPEN") == 1 )
+	{
+		value = OpenStatus;
+	}
+	else if (strcontains(input, "OPEN MIGRATE") == 1 )
+	{
+		value = OpenMigrateStatus;
+	}
+	else if (strcontains(input, "MOUNTED") == 1 )
+	{
+		value = MountedStatus;
+	}
+	else if (strcontains(input, "STARTED") == 1 )
+	{
+		value = StartedStatus;
+	}
+	else if (strcontains(input, "OFFLINE") == 1 )
+	{
+		value = OfflineStatus;
+	}
+
+	
+	
+	if (parm == "display")
+    {
+        if (value == OpenStatus)
+		{
+			value = "Open";
+		}
+		else if (value == OpenMigrateStatus)
+		{
+			value = "Open Migrate";
+		}
+		else if (value == MountedStatus)
+		{
+			value = "Mounted";
+		}
+		else if (value == StartedStatus)
+		{
+			value = "Started";
+		}
+		else if (value == OfflineStatus)
+		{
+			value = "Offline";
+		}
+	
+    }
+	
+	if (parm == "bundlekey")
+    {
+        if (value == OpenStatus)
+		{
+			value = "Open_key";
+		}
+		else if (value == OpenMigrateStatus)
+		{
+			value = "OpenMigrate_key";
+		}
+		else if (value == MountedStatus)
+		{
+			value = "Mounted_key";
+		}
+		else if (value == StartedStatus)
+		{
+			value = "Started_key";
+		}
+		else if (value == OfflineStatus)
+		{
+			value = "Offline_key";
+		}	
+    }
+    
+    if (properties.print == "y")
+    {
+        retcode = rasprint("KRZ_InstanceStatus: Using input %s. Value is %s",
+                           input,value);
+    }
+       
+    return;
+}
+
+
+
+
