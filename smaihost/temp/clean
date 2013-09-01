@@ -1,4 +1,4 @@
-#!/bin/ksh
+#!/bin/bash
 #
 # Licensed Materials - Property of IBM
 #
@@ -11,19 +11,9 @@
 # IBM Corp.
 #
 
-if [ -d /opt/IBM/ITM/logs ] ; then
-    ITM_LOG_DIR=/opt/IBM/ITM/logs
-elif [ -d /opt/ibm/ccm/sma/logs ] ; then
-    ITM_LOG_DIR=/opt/ibm/ccm/sma/logs
-elif [ -d /opt/ibm/ccm/oslc_pm/logs ] ; then
-    ITM_LOG_DIR=/opt/ibm/ccm/oslc_pm/logs
-else
-    echo "ITM_LOG_DIR not found"
-    exit 1
-fi
-for f in $ITM_LOG_DIR/*
+for f in /opt/ibm/ccm/oslc_pm/logs/*
 do
     if [ "$(sudo fuser $f)" = "" ] ; then
-        rm $f
+        sudo rm -f $f
     fi
 done
