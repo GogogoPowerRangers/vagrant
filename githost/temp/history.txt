@@ -1,0 +1,127 @@
+    1  cd bin
+    2  cd /Users/dokamura
+    3  cd bin
+    4  ls
+    5  bso.py
+    6  echo $PATH
+    7  ln -sf /Users/dokamura/bin ~
+    8  bso.py
+    9  git pull
+   10  cd 
+   11  ls .ssh
+   12  rsync -a -v -z /Users/dokamura/.ssh/* ~/.ssh
+   13  cd
+   14  cd bin git pull
+   15  cd dokamura
+   16  ./ez_setup-install
+   17  which rsync
+   18  rpm -qa python-devel
+   19  rpm -qa python
+   20  sudo yum install python-devel
+   21  ./ez_setup-install
+   22  ls
+   23  ./ibm-set.py a8ud8rey
+   24  cd
+   25  ls -latr
+   26  chmod 700 .local
+   27  bso.py
+   28  vi bin/bso.py
+   29  bso.py
+   30  mkdir ~/temp
+   31  bso.py
+   32  ls -ld ~/.ssh
+   33  ls -ld ~/.ssh/*
+   34  chmod 600 ~/.ssh/*
+   35  ls -l ~/.ssh
+   36  chmod 700 ~/.ssh/aws
+   37  chmod 600 ~/.ssh/aws/*
+   38  bso.py
+   39  chmod 700 ~/.python-eggs
+   40  bso.py
+   41  sudo vi /etc/resolv.conf 
+   42  bso.py
+   43  nslookup ausgsa.ibm.com
+   44  ping 9.0.9.1
+   45  netstat -nr
+   46  sudo vi /etc/resolv.conf 
+   47  ping ausgsa.ibm.com
+   48  bso.py
+   49  vi ~/bin/bso.py
+   50  export BSONAME=dokamura
+   51  bso.py
+   52  vi ~/bin/bso.py
+   53  bso.py
+   54  vi ~/bin/bso.py
+   55  bso.py
+   56  vi ~/bin/bso.py
+   57  bso.py
+   58  ln -sf /Users/dokamura/itmdev ~
+   59  cd ~/itmdev/kas
+   60  git pull
+   61  ls
+   62  cd ~/vagrant
+   63  cd /Users/dokamura/vagrant
+   64  git pull
+   65  cat .git/config
+   66  ping github.com
+   67  sudo vi /etc/hosts
+   68  git pull
+   69  mv itmhost/temp/clean ~/temp
+   70  git pull
+   71  mv itmhost/temp/kasmain.env ~/temp
+   72  git pull
+   73  mv smaihost/Vagrantfile ~/temp
+   74  git pull
+   75  mv smaihost/temp/clean ~/temp
+   76  git pull
+   77  cd ~/bin
+   78  git status
+   79  git diff remake.bat
+   80  file *.bat
+   81  unix2dos remake.bat
+   82  sudo yum install dos2unix
+   83  sudo vi /etc/hosts
+   84  sudo vi /etc/resolv.conf
+   85  sudo vi /etc/hosts
+   86  sudo yum install dos2unix
+   87  sudo yum install unix2dos
+   88  unix2dos remake.bat
+   89  git diff remake.bat
+   90  rm remake.bat
+   91  git status
+   92  git checkout remake.bat
+   93  git status
+   94  git diff git-pull
+   95  file git-pull
+   96  ls
+   97  vi vpn git-pull
+   98  dos2unix git-pull
+   99  git diff git-pull
+  100  vi git-pull
+  101  git status
+  102  file bso.py
+  103  vi bso.py
+  104  git add .
+  105  git commit -am fixes
+  106  git config --global user.name "Dean Okamura"
+  107  git config --global user.email dokamura@us.ibm.com
+  108  git commit --amend --author='Dean Okamura <dokamura@us.ibm.com>'
+  109  git push origin master
+  110  cd /Users
+  111  ls
+  112  cd
+  113  git-pull
+  114  cd ~/bin
+  115  mv git git.portable
+  116  cd
+  117  git-pull
+  118  bash -x ~/bin/git-pull
+  119  cd /Users/dokamura
+  120  git-pull
+  121  sudo vi /etc/resolv.conf
+  122  cd itmdev
+  123  git-pull
+  124  cp /etc/resolv.conf ~/temp
+  125  mkdir /vagrant/temp
+  126  cp /etc/resolv.conf /vagrant/temp
+  127  history > /vagrant/temp/history.txt
