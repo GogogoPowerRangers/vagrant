@@ -2,6 +2,5 @@ https://www.entrust.net/downloads/root_request.cfm
 
 Adding to the end of /etc/pki/tls/certs/ca-bundle.crt did not work.
 
-sudo openssl x509 -in /vagrant/temp/entrust_ssl_ca.der -inform DER -out /opt/.cisco/certificates/ca/entrust_ssl_ca.pem -outform PEM
-
+Copy *.pem to /opt/.cisco/certificates/ca
 
