@@ -14,6 +14,7 @@ LIBPATH=${CANDLEHOME}/${GSKARCH}/gs/${GSKLIB}:/lib:/usr/lib:${CANDLEHOME}/${PROD
 PATH=/usr/bin:/bin:${CANDLEHOME}/${PRODUCTARCH}/${PRODUCTCODE}/bin
 SHLIB_PATH=${CANDLEHOME}/${GSKARCH}/gs/${GSKLIB}:/lib:/usr/lib:${CANDLEHOME}/${PRODUCTARCH}/${PRODUCTCODE}/lib
 ICCRTE_DIR=${CANDLEHOME}/${GSKARCH}/gs
+KBB_RAS1=ERROR
 ITM_BINARCH=${PRODUCTARCH}
 KBB_ACF1_PATH=${CANDLEHOME}/tmaitm6/${TEMAARCH}/bin
 KGL_ENABLE_ATR2=Y
@@ -24,7 +25,6 @@ KGL_TRC1=ENABLE ERRLOG
 KBB_SIG1=-dumpoff -trace
 COMMAND=kasmain
 KDHS_ALLOW_DELETE_METHOD=Y
-# CT_CMSLIST is for Agents
 CT_CMSLIST=
 # =============================================
 # The following lines are missing from the default installation
@@ -83,17 +83,9 @@ KAS_CURI_DP_ENABLED=YES
 # ---------------------------------------------
 KDC_FAMILIES=IP.PIPE use:n IP use:n SNA use:n IP.SPIPE use:n IP6 use:n IP6.PIPE use:n IP6.SPIPE use:n HTTP:10001
 KAS_CURI_DP_URL_PROTOCOL=HTTP
-# ---------------------------------------------
-# KAS_CURI_DP_URL_HOSTNAME=yangpa.usca.ibm.com
-# KAS_CURI_DP_URL_HTTP_PORT=15210
-# KAS_CURI_DP_URL_HTTPS_PORT=15211
-# KAS_CURI_DP_AUTH=Yes
-# KAS_CURI_DP_USER=sysadmin
-# KAS_CURI_DP_PASSWORD=password
-# ---------------------------------------------
-KAS_CURI_DP_URL_HOSTNAME=saudade.usca.ibm.com
+KAS_CURI_DP_URL_HOSTNAME=localhost
 KAS_CURI_DP_URL_HTTP_PORT=80
-KAS_CURI_DP_URL_HTTPS_PORT=9443
+KAS_CURI_DP_URL_HTTPS_PORT=443
 KAS_CURI_DP_AUTH=Yes
 KAS_CURI_DP_USER=smadmin
 KAS_CURI_DP_PASSWORD=passw0rd
@@ -101,7 +93,4 @@ KAS_CURI_DP_PASSWORD=passw0rd
 ATTRLIB=ATTRLIB
 KAS_OSLC_TEMPLATE_DIR=OSLC
 # =============================================
-KBB_RAS1=ERROR (UNIT:kascuri ALL) (UNIT:prtpproc ERROR STATE) (UNIT:prnsmgr ALL)
-# (UNIT:kascuri ERROR STATE) (UNIT:prtpproc ERROR STATE)
-# (UNIT:kascuri ALL) (UNIT:pr ALL)
 #
