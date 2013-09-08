@@ -1,6 +1,0 @@
-https://www.entrust.net/downloads/root_request.cfm
-
-Adding to the end of /etc/pki/tls/certs/ca-bundle.crt did not work.
-
-Copy *.pem to /opt/.cisco/certificates/ca
-
