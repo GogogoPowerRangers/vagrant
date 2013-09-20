@@ -18,6 +18,7 @@ Vagrant.configure("2") do |config|
   # Create a forwarded port mapping which allows access to a specific port
   # within the machine from a port on the host machine. In the example below,
   # accessing "localhost:8080" will access port 80 on the guest machine.
+  # SMAI web interface does not work with localhost:8080 port forwarding
   # config.vm.network :forwarded_port, guest: 80, host: 8080
   config.vm.network :forwarded_port, guest: 10001, host: 10001
 
@@ -28,6 +29,7 @@ Vagrant.configure("2") do |config|
   # Create a public network, which generally matched to bridged network.
   # Bridged networks make the machine appear as another physical device on
   # your network.
+  # SMAI web interface works with :public_network
   # config.vm.network :public_network
 
   # Share an additional folder to the guest VM. The first argument is
@@ -58,17 +60,13 @@ Vagrant.configure("2") do |config|
   #
   config.vm.provision :chef_solo do |chef|
     chef.cookbooks_path = "~/cookbooks"
-    chef.add_recipe "build-essential::default"
+    # AWS and bare metal installation (bare prologue)
+    # chef.add_recipe "smaihost::bare"
+    # SMAI installation (default only)
     chef.add_recipe "smaihost::default"
-    # Note: 9.0.9.1 is for the IBM AT&T Global Network Client VPN
-    #       Uncomment if you do not want to edit /etc/resolv.conf
-    # chef.json = {
-    #     "resolver" => {
-    #         "nameservers" => [ "9.0.9.1" ],
-    #         "search" => "ibm.com",
-    #         "options" => [ "rotate" ]
-    #     }
-    # }
+    # Dev installation (build-essential and dev)
+    # chef.add_recipe "build-essential::default"
+    # chef.add_recipe "smaihost::dev"
   end
 
   # Enable provisioning with chef server, specifying the chef server URL,

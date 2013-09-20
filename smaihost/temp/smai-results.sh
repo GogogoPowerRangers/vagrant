@@ -16,10 +16,11 @@
 #
 
 # Note: There is too much setup for this test -- need to simplify later
+HOSTNAME=$(hostname | sed -e 's#\..*##'); export HOSTNAME
 if [ ! "$1" = "" ] ; then
     SYSTEM=$1
 elif [ "$SYSTEM" = "" ] ; then
-    SYSTEM=$(hostname); export SYSTEM
+    SYSTEM=$(hostname | sed -e 's#\..*##'); export SYSTEM
 fi
 if [ "$CANDLEHOME" = "" ] ; then
     case $(uname -s) in
@@ -34,7 +35,7 @@ if [ "$CANDLEHOME" = "" ] ; then
     esac
     export CANDLEHOME
 fi
-if [ "$KASENV" = "" ] ; then
+if [ -d $CANDLEHOME/logs ] ; then
     case $(uname -s) in
     MINGW* | CYGWIN* ) KASENV=$CANDLEHOME/CAS/BIN/KASENV ;;
     * )
@@ -58,83 +59,41 @@ TEMS_DIR=$HOME/temp/$SYSTEM/TEMS
 if [ ! -d $TEMS_DIR ] ; then
     mkdir -p $TEMS_DIR
 fi
-NC185029_DIR=$HOME/jsm/nc185029
-if [ ! -d $NC185029_DIR ] ; then
-    mkdir $NC185029_DIR
+SCR_DIR=$HOME/jsm/nc185029
+if [ ! -d $SCR_DIR ] ; then
+    mkdir $SCR_DIR
 fi
-
-# Delete Registry Services entries
-cd $NC185029_DIR
-if [ ! "$(ls -d ${SYSTEM}* 2> /dev/null)" = "" ] ; then
-    jsm rm ${SYSTEM}*
-fi
-
-# Restart OSLC-PM Service Provider
-case "$(uname -s)" in
-MINGW* | CYGWIN* )
-    net stop KAS1
-    rm -f $CANDLEHOME/logs/*
-    net start KAS1
-    ;;
-* )
-    if [ -f $CANDLEHOME/bin/itmcmd ] ; then
-        $CANDLEHOME/bin/itmcmd agent stop as
-        rm -f $CANDLEHOME/logs/*
-        $CANDLEHOME/bin/itmcmd agent start as
-    else
-        echo "$CANDLEHOME/bin start/stop kasmain not found"
-        exit 1
-    fi
-    ;;
-esac
 
 # Delete Unit Test results
-if [ "$(grep 'KAS_CURI_DP_ENABLED=NO' $KASENV)" = "" ] ; then
-    UNIT_DIR=$CDP_DIR
-else
-    UNIT_DIR=$TEMS_DIR
-fi
+UNIT_DIR=$CDP_DIR
 rm -f $UNIT_DIR/* $UNIT_DIR/.as.*
 
-# Give OSLC-PM Service Provider time to register a few agents
-echo "Running"
-sleep 30
-echo "Running ."
-sleep 30
-echo "Running .."
-sleep 30
-echo "Running ..."
-# sleep 30
-# echo "Running ...."
-# sleep 30
-# echo "Running ....."
-# sleep 30
-# echo "Running ......"
-# sleep 30
-# echo "Running ......."
-# sleep 30
-
 # Get Registry Services files
-cd $NC185029_DIR
+cd $SCR_DIR
 jsm all
 
 # Copy Unit Test results
+if [ "$SYSTEM" = "$HOSTNAME" -a -d $CANDLEHOME/logs ] ; then
+    echo "Copy files to $UNIT_DIR"
+    cp -p $KASENV $UNIT_DIR
+    rm -f $CANDLEHOME/logs/*.inv
+    rm -f $CANDLEHOME/logs/candle_installation.log
+    rm -f $CANDLEHOME/logs/itm_config.log
+    rm -f $CANDLEHOME/logs/itm_config.trc
+    rm -f $CANDLEHOME/logs/itm_synclock.trc
+    cp -p $CANDLEHOME/logs/kasmain* $UNIT_DIR 2> /dev/null
+    cp -p $CANDLEHOME/logs/*_as_*.log $UNIT_DIR
+fi
 echo "Copy files to $UNIT_DIR"
-cp $KASENV $UNIT_DIR
-rm -f $CANDLEHOME/logs/*.inv
-rm -f $CANDLEHOME/logs/candle_installation.log
-rm -f $CANDLEHOME/logs/itm_config.log
-rm -f $CANDLEHOME/logs/itm_config.trc
-rm -f $CANDLEHOME/logs/itm_synclock.trc
-cp $CANDLEHOME/logs/kasmain* $UNIT_DIR 2> /dev/null
-cp $CANDLEHOME/logs/*_as_*.log $UNIT_DIR
 for f in ${SYSTEM}*/*
 do
     # There are multiple recordType entries; just use the first one
     pc=$(grep recordType $f 2> /dev/null | head -1 | sed -e 's/.*#//' -e 's/".*//')
 
     # This could be done with an XML parser but '<crtv:' is not easy to process
-    if [ ! "$(grep '<crtv:ComputerSystem' $f)" = "" ] ; then
+    if [ ! "$(grep 'crtv:Application' $f)" = "" ] ; then
+        crtv='Application'
+    elif [ ! "$(grep '<crtv:ComputerSystem' $f)" = "" ] ; then
         crtv='ComputerSystem'
     elif [ ! "$(grep '<crtv:Database' $f)" = "" ] ; then
         crtv='Database'
@@ -168,6 +127,8 @@ do
         crtv='KNTAgentProcess'
     elif [ ! "$(grep '<rr:RegistrationRecord' $f)" = "" ] ; then
         crtv='RegistrationRecord'
+    elif [ ! "$(grep '<rr:ResourceRecord' $f)" = "" ] ; then
+        crtv='ResourceRecord'
     else
         crtv='UNKNOWN'
     fi
