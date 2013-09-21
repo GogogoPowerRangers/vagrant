@@ -1,5 +1,17 @@
+#
+# vagrant provisioning selected by RECIPE environment variable.
+#
+#     RECIPE=bare vagrant provision
+#     ... AWS and bare metal installation
+#
+#     RECIPE=dev vagrant provision
+#      ... Dev installation
+#
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
+recipe = nil
+recipe = 'bare' if ENV['RECIPE'] == 'bare'
+recipe = 'dev' if ENV['RECIPE'] == 'dev'
 
 Vagrant.configure("2") do |config|
   # All Vagrant configuration is done here. The most common configuration
@@ -60,13 +72,20 @@ Vagrant.configure("2") do |config|
   #
   config.vm.provision :chef_solo do |chef|
     chef.cookbooks_path = "~/cookbooks"
+    case recipe
     # AWS and bare metal installation (bare prologue)
-    # chef.add_recipe "smaihost::bare"
-    # SMAI installation (default only)
-    chef.add_recipe "smaihost::default"
+    when 'bare'
+      puts "AWS and bare metal installation"
+      chef.add_recipe "smaihost::bare"
     # Dev installation (build-essential and dev)
-    # chef.add_recipe "build-essential::default"
-    # chef.add_recipe "smaihost::dev"
+    when 'dev'
+      puts "Dev installation"
+      chef.add_recipe "build-essential::default"
+      chef.add_recipe "smaihost::dev"
+    # SMAI installation (default only)
+    else
+      chef.add_recipe "smaihost::default"
+    end
   end
 
   # Enable provisioning with chef server, specifying the chef server URL,
