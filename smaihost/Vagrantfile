@@ -1,17 +1,15 @@
 #
-# vagrant provisioning selected by RECIPE environment variable.
+# Before running vagrant, export the shell variable for non-default provisioning.
 #
-#     RECIPE=bare vagrant provision
-#     ... AWS and bare metal installation
+# export RECIPE=bare
+# ... AWS and bare metal installation
 #
-#     RECIPE=dev vagrant provision
-#      ... Dev installation
+# export RECIPE=dev
+# ... Dev installation
 #
-# -*- mode: ruby -*-
-# vi: set ft=ruby :
-recipe = nil
-recipe = 'bare' if ENV['RECIPE'] == 'bare'
-recipe = 'dev' if ENV['RECIPE'] == 'dev'
+require 'socket'
+
+recipe = ENV['RECIPE'] || 'default'
 
 Vagrant.configure("2") do |config|
   # All Vagrant configuration is done here. The most common configuration
