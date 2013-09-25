@@ -16,8 +16,8 @@
 #
 
 # file_cache_path
-if [ ! -d /tmp/vagrant-chef-1 ] ; then
-    mkdir /tmp/vagrant-chef-1
+if [ ! -d /tmp/vagrant-chef-1/chef-solo-1 ] ; then
+    mkdir -p /tmp/vagrant-chef-1/chef-solo-1
 fi
 # cookbook_path
 if [ ! -d /tmp/vagrant-chef-1/chef-solo-1/cookbooks -a \
@@ -25,6 +25,15 @@ if [ ! -d /tmp/vagrant-chef-1/chef-solo-1/cookbooks -a \
      -d $HOME/cookbooks ] ; then
    ln -sf $HOME/cookbooks /tmp/vagrant-chef-1/chef-solo-1/cookbooks
 fi
+
+# SMAI only
+if [ -f /tmp/smai-fabric/uninstall.sh ] ; then
+    sudo /tmp/smai-fabric/uninstall.sh
+    # Temp: uninstall leftovers
+    sudo rm -rf /opt/ibm/wlp/restdb
+    sudo rm -rf /opt/ibm/ccm
+fi
+sudo rm -rf /tmp/smai-*
 
 # Vagrant usually runs Chef as root
 # Note: RECIPE is an experimental environment variable
