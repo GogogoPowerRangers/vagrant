@@ -1,5 +1,6 @@
 data/*
 boxes/*
+boxes.backup/*
 .vagrant
 .DS_Store
 *.box
