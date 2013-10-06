@@ -76,6 +76,7 @@ install()
         sudo apt-get clean
         sudo apt-get -f install
         sudo apt-get update --fix-missing
+        sudo apt-get -y install curl
         sudo apt-get -y install mongodb-clients
         sudo apt-get -y install build-essential
         sudo apt-get -y install python-dev
@@ -84,6 +85,7 @@ install()
         sudo apt-get -y install nodejs npm
         npm install mongodb
         sudo apt-get -y install memcached
+        npm install mc
     else
         echo "install: `uname -s` is not supported"; exit 1
     fi
