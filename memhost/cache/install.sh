@@ -32,7 +32,7 @@ install()
         npm install mongodb
         sudo apt-get -y install memcached
         npm install mc
-        sudo apt-get autoremove
+        sudo apt-get -y autoremove
     else
         echo "install: `uname -s` is not supported"; exit 1
     fi
