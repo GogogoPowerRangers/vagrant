@@ -45,7 +45,7 @@ install_mongodb()
         curl http://downloads.mongodb.org/osx/mongodb-osx-x86_64-2.4.6.tgz > mongodb.tar.gz
         ;;
     Linux )
-        sudo apt-get install curl
+        sudo apt-get -y install curl
         curl http://fastdl.mongodb.org/linux/mongodb-linux-x86_64-2.4.6.tgz > mongodb.tar.gz
         ;;
     * ) echo "install_mongodb: `uname -s` is not supported"; exit 1 ;;
@@ -73,12 +73,17 @@ test()
 install()
 {
     if [ -f /usr/bin/apt-get ] ; then
-        sudo apt-get install mongodb-clients
-        sudo apt-get install build-essential python-dev
-        sudo apt-get install python-pip
+        sudo apt-get clean
+        sudo apt-get -f install
+        sudo apt-get update --fix-missing
+        sudo apt-get -y install mongodb-clients
+        sudo apt-get -y install build-essential
+        sudo apt-get -y install python-dev
+        sudo apt-get -y install python-pip
         sudo pip install pymongo
-        sudo apt-get install nodejs npm
+        sudo apt-get -y install nodejs npm
         npm install mongodb
+        sudo apt-get -y install memcached
     else
         echo "install: `uname -s` is not supported"; exit 1
     fi

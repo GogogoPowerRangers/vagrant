@@ -11,6 +11,7 @@ var c;
 
 var DBUSER = "smadmin";
 var DBPASSWORD = "passw0rd";
+var DBHOST = "ds049198.mongolab.com:49198";
 
 function onRequest(request, response) {
   console.log("Request received");
@@ -25,7 +26,7 @@ function onRequest(request, response) {
   });
 }
 
-MongoClient.connect("mongodb://" + DBUSER + ":" + DBPASSWORD + "@ds049198.mongolab.com:49198/mongodb-test", function(err, db) {
+MongoClient.connect("mongodb://" + DBUSER + ":" + DBPASSWORD + "@" + DBHOST + "/mongodb-test", function(err, db) {
         if (!err) {
                 console.log("Connected to database");
                 c = db.collection("collection1");
