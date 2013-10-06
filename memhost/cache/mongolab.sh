@@ -70,33 +70,10 @@ test()
     ./mongo ds049198.mongolab.com:49198/mongodb-test -u $DBUSER -p DBPASSWORD
 }
 
-install()
-{
-    if [ -f /usr/bin/apt-get ] ; then
-        sudo apt-get clean
-        sudo apt-get -f install
-        sudo apt-get update --fix-missing
-        sudo apt-get -y install curl
-        sudo apt-get -y install mongodb-clients
-        sudo apt-get -y install build-essential
-        sudo apt-get -y install python-dev
-        sudo apt-get -y install python-pip
-        sudo pip install pymongo
-        sudo apt-get -y install nodejs npm
-        npm install mongodb
-        sudo apt-get -y install memcached
-        npm install mc
-    else
-        echo "install: `uname -s` is not supported"; exit 1
-    fi
-}
-
 if [ "$1" = "server" ] ; then
     server
 elif [ "$1" = "test" ] ; then
     test
-elif [ "$1" = "install" ] ; then
-    install
 fi
 
 #
