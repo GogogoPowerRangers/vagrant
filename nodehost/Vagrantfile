@@ -7,8 +7,8 @@ Vagrant.configure("2") do |config|
   # please see the online documentation at vagrantup.com.
 
   # Every Vagrant virtual environment requires a box to build off of.
-  config.vm.box = "memhost"
-  config.vm.hostname = "mem" + Socket.gethostname()
+  config.vm.box = "nodehost"
+  config.vm.hostname = "node" + Socket.gethostname()
 
   # The url from where the 'config.vm.box' box will be fetched if it
   # doesn't already exist on the user's system.
@@ -24,7 +24,7 @@ Vagrant.configure("2") do |config|
   #
   # Set "-l" (listen) port in /etc/memcached.conf to private network IP
   # in memhost/Vagrantfile (192.168.33.10)
-  config.vm.network :private_network, ip: "192.168.33.10"
+  config.vm.network :private_network, ip: "192.168.33.20"
 
   # Create a public network, which generally matched to bridged network.
   # Bridged networks make the machine appear as another physical device on
