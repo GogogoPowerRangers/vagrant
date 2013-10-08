@@ -80,8 +80,8 @@ function onRequest(request, response) {
         }
 }
 
-// Connect to the memcached server with its private AWS IP address
-MemcacheClient = new mc.Client("10.234.177.74");
+// Connect to the memcached server with its private Private IP address
+MemcacheClient = new mc.Client("192.168.33.10");
 MemcacheClient.connect(function() {
         console.log("Connected to memcache");
 });
