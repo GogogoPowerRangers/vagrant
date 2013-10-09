@@ -1,0 +1,93 @@
+# REFERENCES
+# http://juliensimon.blogspot.fr/2013/07/your-mongodb-instance-for-here-or-to-go.html
+# http://juliensimon.blogspot.fr/2013/07/mongodb-and-python-gang-thegither.html
+# http://juliensimon.blogspot.fr/2013/07/from-one-cloud-to-another-or-is-it-same.html
+# http://juliensimon.blogspot.fr/2013/07/the-billion-dollar-app-nodejs-mongodb.html
+# http://juliensimon.blogspot.fr/2013/08/nodejs-mongodb-part-2-here-comes.html
+#
+# From http://juliensimon.blogspot.fr/2013/07/your-mongodb-instance-for-here-or-to-go.html
+#
+Now, let's do the same thing in the cloud with MongoLab.
+You can get a single instance for free, as long as it doesn't exceed 500 MB of data. Pretty cool.
+Another option is MongoHQ who offer a similar service.
+I'm not affiliated with any, so feel free to check out both :)
+
+1.  Sign up at www.mongolab.com
+2.  Create a database ('mongolab-test' in my case)
+3.  Pick your hosting location: AWS, Google, etc. If you're simply testing, this doesn't really matter, but when you'll be deploying for real, you'll want to make sure your DB is the same cloud as your app, I suppose ;)
+4.  Select the 'Sandbox' plan
+5.  Create a first user (or you won't be able to connect to your DB, duh)
+
+Add a collection, 'collection1' in my case. Obviously, it will be empty. 
+
+Let's use the MongoDB shell again and add some data:
+
+$ ./mongo ds051067.mongolab.com:51067/mongolab-test -u DBUSER -p DBPASSWORD
+MongoDB shell version: 2.4.5
+connecting to: ds051067.mongolab.com:51067/mongolab-test
+> use mongolab-test
+switched to db mongolab-test
+> show collections
+collection1
+system.indexes
+system.users
+> for (var i = 1; i <= 25; i++) db.collection1.insert( { x : i } )
+> db.collection1.find()
+{ "_id" : ObjectId("51e3ce08915082db3df32bf0"), "x" : 1 }
+{ "_id" : ObjectId("51e3ce08915082db3df32bf1"), "x" : 2 }
+{ "_id" : ObjectId("51e3ce08915082db3df32bf2"), "x" : 3 }
+[Output removed for brevity]
+> db.collection1.find({x:18})
+{ "_id" : ObjectId("51e3ce08915082db3df32c01"), "x" : 18 }
+
+All right, we wrote some stuff. Let's create an index:
+
+> db.collection1.ensureIndex({"x":1})
+> db.collection1.getIndexes()
+
+[
+{
+"v" : 1,
+"key" : {
+"_id" : 1
+},
+"ns" : "mongolab-test.collection1",
+"name" : "_id_"
+},
+{
+"v" : 1,
+"key" : {
+"x" : 1
+},
+"ns" : "mongolab-test.collection1",
+"name" : "x_1"
+}
+]
+> db.collection1.find({x:18}).explain()
+{
+"cursor" : "BtreeCursor x_1",
+"isMultiKey" : false,
+"n" : 1,
+"nscannedObjects" : 1,
+"nscanned" : 1,
+"nscannedObjectsAllPlans" : 1,
+"nscannedAllPlans" : 1,
+"scanAndOrder" : false,
+"indexOnly" : false,
+"nYields" : 0,
+"nChunkSkips" : 0,
+"millis" : 0,
+"indexBounds" : {
+"x" : [
+[
+18,
+18
+]
+]
+},
+"server" : "h000432.mongolab.com:51067"
+}
+
+
+That's it for today. I've just scratched the surface but it should get you started.
+See how easy this was? Happy learning!
