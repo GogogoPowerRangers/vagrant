@@ -1,0 +1,6 @@
+{
+  "run_list": [
+    "recipe[build-essential::default]",
+    "recipe[smaihost::default]"
+  ]
+}

@@ -1,0 +1,21 @@
+Support Files
+
+1.  smai required files
+
+    Files in ~/vagrant/data networked/copied to /vagrant_data
+    Since there is no networked file access for AWS, files are uploaded.
+
+    smai-consumer.tar
+    * ITM Agents (Linux)
+    smai-consumer.zip
+    * ITM Agents (Windows)
+    smai-fabric.tar
+    * SMAI Fabric Node, GAIAN Database, CURI Data Provider
+
+2.  smai optional files
+
+    If you need a Java SDK, extract and set JAVA_HOME.
+
+    ibm-java-sdk-7.0-5.0-linux-x86_64.tar.gz
+
+
