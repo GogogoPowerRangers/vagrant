@@ -26,8 +26,10 @@ scripts()
     sudo chmod 755 /opt/ibm/ccm/$1/bin/uninstall.sh
 }
 
-scripts agent
-scripts oslc_pm
+if [ ! "$(rpm -qa | grep smai)" = "" ] ; then
+    scripts agent
+    scripts oslc_pm
 
-# Remove packages
-sudo yum -y remove $(rpm -qa | grep smai)
+    # Remove packages
+    sudo yum -y remove $(rpm -qa | grep smai)
+fi

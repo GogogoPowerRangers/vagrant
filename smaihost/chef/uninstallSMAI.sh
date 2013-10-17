@@ -18,6 +18,8 @@ echo "INFO: Run ./uninstallFabric.sh"
 ./uninstallFabric.sh
 echo "INFO: Run ./uninstallLinuxOS.sh"
 ./uninstallLinuxOS.sh
+echo "INFO: Run ./uninstallFixups.sh"
+./uninstallFixups.sh
 
 if [ -d /opt/ibm/ccm ] ; then
     sudo rm -rf /opt/ibm/ccm
