@@ -16,12 +16,18 @@
 #
 
 # Fixups for missing scripts
-test -d /opt/ibm/ccm/agent/bin || sudo mkdir -p /opt/ibm/ccm/agent/bin
-test -d /opt/ibm/ccm/agent/logs || sudo mkdir -p /opt/ibm/ccm/agent/logs
-test -f /opt/ibm/ccm/agent/bin/itmcmd || echo "exit 0" | sudo tee /opt/ibm/ccm/agent/bin/itmcmd
-sudo chmod 755 /opt/ibm/ccm/agent/bin/itmcmd
-test -f /opt/ibm/ccm/agent/bin/uninstall.sh || echo "exit 0" | sudo tee /opt/ibm/ccm/agent/bin/uninstall.sh
-sudo chmod 755 /opt/ibm/ccm/agent/bin/uninstall.sh
+scripts()
+{
+    test -d /opt/ibm/ccm/$1/bin || sudo mkdir -p /opt/ibm/ccm/$1/bin
+    test -d /opt/ibm/ccm/$1/logs || sudo mkdir -p /opt/ibm/ccm/$1/logs
+    test -f /opt/ibm/ccm/$1/bin/itmcmd || echo "exit 0" | sudo tee /opt/ibm/ccm/$1/bin/itmcmd
+    sudo chmod 755 /opt/ibm/ccm/$1/bin/itmcmd
+    test -f /opt/ibm/ccm/$1/bin/uninstall.sh || echo "exit 0" | sudo tee /opt/ibm/ccm/$1/bin/uninstall.sh
+    sudo chmod 755 /opt/ibm/ccm/$1/bin/uninstall.sh
+}
+
+scripts agent
+scripts oslc_pm
 
 # Remove packages
 sudo yum -y remove $(rpm -qa | grep smai)

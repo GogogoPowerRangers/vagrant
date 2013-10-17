@@ -11,7 +11,7 @@
 # IBM Corp.
 #
 
-for f in /opt/ibm/ccm/oslc_pm/logs/* /opt/IBM/ITM/logs/*
+for f in /opt/ibm/ccm/oslc_pm/logs/* /opt/IBM/ITM/logs/* /opt/ibm/ccm/agent/logs/*
 do
     if [ "$(sudo fuser $f)" = "" ] ; then
         sudo rm -f $f
