@@ -14,17 +14,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-echo "INFO: Run ./uninstallFabric.sh"
-./uninstallFabric.sh
-echo "INFO: Run ./uninstallLinuxOS.sh"
-./uninstallLinuxOS.sh
 
-if [ -d /opt/ibm/ccm ] ; then
-    sudo rm -rf /opt/ibm/ccm
-fi
-if [ -d /opt/ibm/wlp ] ; then
-    sudo rm -rf /opt/ibm/wlp
-fi
+# Fixups for missing scripts
+test -d /opt/ibm/ccm/agent/bin || sudo mkdir -p /opt/ibm/ccm/agent/bin
+test -d /opt/ibm/ccm/agent/logs || sudo mkdir -p /opt/ibm/ccm/agent/logs
+test -f /opt/ibm/ccm/agent/bin/itmcmd || echo "exit 0" | sudo tee /opt/ibm/ccm/agent/bin/itmcmd
+sudo chmod 755 /opt/ibm/ccm/agent/bin/itmcmd
+test -f /opt/ibm/ccm/agent/bin/uninstall.sh || echo "exit 0" | sudo tee /opt/ibm/ccm/agent/bin/uninstall.sh
+sudo chmod 755 /opt/ibm/ccm/agent/bin/uninstall.sh
 
-find /opt/ibm | grep -v 'java-x86_64'
-find /opt/IBM | grep -v 'java-x86_64'
+# Remove packages
+sudo yum -y remove $(rpm -qa | grep smai)
