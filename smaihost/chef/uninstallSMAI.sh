@@ -28,5 +28,7 @@ if [ -d /opt/ibm/wlp ] ; then
     sudo rm -rf /opt/ibm/wlp
 fi
 
+sudo rm -rf /tmp/smai*
+
 find /opt/ibm | grep -v 'java-x86_64'
 find /opt/IBM | grep -v 'java-x86_64'
