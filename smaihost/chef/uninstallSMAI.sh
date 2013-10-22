@@ -32,3 +32,4 @@ sudo rm -rf /tmp/smai*
 
 find /opt/ibm | grep -v 'java-x86_64'
 find /opt/IBM | grep -v 'java-x86_64'
+find /tmp/smai*
