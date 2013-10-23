@@ -15,18 +15,14 @@
 # limitations under the License.
 #
 
-clearLogs()
+stopSMAI()
 {
-    ( cd /opt/ibm/wlp/usr/servers/server1/logs && sudo rm -f *_* ffdc/* )
+    sudo stop fabricNode
+    sudo stop liberty
+    sudo /opt/ibm/ccm/SCR/XMLtoolkit/bin/tbsmrdr_stop.sh
+    sudo stop apmui
 }
 
-case $0 in
-*/* ) DIR=$(dirname $0) ;;
-* ) DIR=$($(dirname $(which $0)) ;;
-esac
-
-$DIR/stopSMAI.sh
-$DIR/startSMAI.sh
-clearLogs
+stopSMAI
 
 #

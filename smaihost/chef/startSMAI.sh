@@ -15,18 +15,16 @@
 # limitations under the License.
 #
 
-clearLogs()
+startSMAI()
 {
-    ( cd /opt/ibm/wlp/usr/servers/server1/logs && sudo rm -f *_* ffdc/* )
+    sudo start fabricNode
+    echo "Wait and restart XML toolkit and APM UI"
+    sleep 10
+    sudo /opt/ibm/ccm/SCR/XMLtoolkit/bin/tbsmrdr_start.sh
+    sleep 10
+    sudo start apmui
 }
 
-case $0 in
-*/* ) DIR=$(dirname $0) ;;
-* ) DIR=$($(dirname $(which $0)) ;;
-esac
-
-$DIR/stopSMAI.sh
-$DIR/startSMAI.sh
-clearLogs
+startSMAI
 
 #
