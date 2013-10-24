@@ -22,7 +22,7 @@ clearLogs()
 
 case $0 in
 */* ) DIR=$(dirname $0) ;;
-* ) DIR=$($(dirname $(which $0)) ;;
+* ) DIR=$(dirname $(which $0)) ;;
 esac
 
 $DIR/stopSMAI.sh
