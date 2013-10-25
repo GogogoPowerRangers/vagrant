@@ -15,19 +15,6 @@
 # limitations under the License.
 #
 
-sudo killall -KILL kasmain
-sudo killall -KILL kcawd
-sudo killall -KILL kkjagent
-sudo killall -KILL kkmagent
-sudo killall -KILL klzagent
-sudo killall -KILL kt5agent
-sudo killall -KILL kynagent
-
-sudo yum remove -y smai-wrt-oslc-support-07.40.00.00-1.el6.noarch
-sudo yum remove -y smai-os-06.30.02.00-1.el6.x86_64
-sudo yum remove -y smai-framework-core-06.35.00.00-1.el6.x86_64
-sudo yum remove -y smai-framework-jre-07.04.02.00-1.el6.x86_64
-sudo rm -rf /opt/ibm/ccm/agent
-sudo rm -rf /opt/IBM/ITM
-
-#
+sudo /opt/ibm/ccm/agent/bin/itmcmd agent stop lz
+sudo rm -f /opt/ibm/ccm/agent/logs/*
+sudo /opt/ibm/ccm/agent/bin/itmcmd agent start lz
