@@ -15,8 +15,6 @@
 # limitations under the License.
 #
 
-sudo test -f /opt/ibm/ccm/oslc_pm/oslc/xml/kyn.xml
-if [ ! $? ] ; then
-    cd /opt/ibm/ccm/oslc_pm
-    sudo tar -xvf /vagrant/temp/oslc-kyn.tar
-fi
+sudo test -f /opt/ibm/ccm/oslc_pm/oslc/xml/kyn.xml && exit 0
+cd /opt/ibm/ccm/oslc_pm
+sudo tar -xvf /vagrant/temp/oslc-kyn.tar
