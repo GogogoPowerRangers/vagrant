@@ -30,6 +30,12 @@ fi
 
 sudo rm -rf /tmp/smai*
 
+echo "Look for SMAI files"
 find /opt/ibm | grep -v 'java-x86_64'
 find /opt/IBM | grep -v 'java-x86_64'
 find /tmp/smai*
+
+echo "Look for SMAI processes"
+ps -ef | grep java
+ps -ef | grep /opt/ibm
+ps -ef | grep /opt/IBM
