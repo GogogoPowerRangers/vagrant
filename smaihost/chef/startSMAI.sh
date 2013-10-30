@@ -18,6 +18,7 @@
 startSMAI()
 {
     sudo start fabricNode
+    sudo /opt/ibm/wlp/bin/server start server1
     echo "Wait and restart XML toolkit and APM UI"
     sleep 10
     sudo /opt/ibm/ccm/SCR/XMLtoolkit/bin/tbsmrdr_start.sh
