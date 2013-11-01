@@ -33,3 +33,5 @@ if [ ! "$(rpm -qa | grep smai)" = "" ] ; then
     # Remove packages
     sudo yum -y remove $(rpm -qa | grep smai)
 fi
+
+sudo killall -9 /opt/ibm/java-x86_64-70/jre/bin/java

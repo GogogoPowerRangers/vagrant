@@ -19,6 +19,7 @@ stopSMAI()
 {
     sudo stop fabricNode
     sudo stop liberty
+    sudo /opt/ibm/wlp/bin/server stop server1
     sudo /opt/ibm/ccm/SCR/XMLtoolkit/bin/tbsmrdr_stop.sh
     sudo stop apmui
 }

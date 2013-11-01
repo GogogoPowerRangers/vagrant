@@ -15,17 +15,10 @@
 # limitations under the License.
 #
 
-startSMAI()
-{
-    sudo start fabricNode
-    sudo /opt/ibm/wlp/bin/server start server1
-    echo "Wait and restart XML toolkit and APM UI"
-    sleep 10
-    sudo /opt/ibm/ccm/SCR/XMLtoolkit/bin/tbsmrdr_start.sh
-    sleep 10
-    sudo start apmui
-}
-
-startSMAI
+sudo /opt/ibm/ccm/oslc_pm/bin/itmcmd agent stop as
+sudo killall -9 /opt/ibm/ccm/oslc_pm/lx8266/as/bin/kasmain
+sudo chown -R $LOGNAME:users /opt/ibm/ccm/oslc_pm
+sudo rm -f /opt/ibm/ccm/oslc_pm/logs/*
+/opt/ibm/ccm/oslc_pm/bin/itmcmd agent start as
 
 #
