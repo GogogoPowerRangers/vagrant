@@ -17,6 +17,8 @@
 
 tasks()
 {
+    source /usr/local/rvm/environments/ruby-2.0.0-p247
+
     if [ ! -d /home/endpoint/saas_endpoint ] ; then
         echo "/home/endpoint/saas_endpoint not found"
         return 1
@@ -53,7 +55,7 @@ tasks()
 
 case "$1" in
 -t ) tasks ;;
-* ) rvmsudo $0 -t ;;
+* ) /usr/local/rvm/bin/rvmsudo $0 -t ;;
 esac
 
 exit $?
