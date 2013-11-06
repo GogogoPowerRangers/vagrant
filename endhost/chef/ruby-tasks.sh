@@ -47,12 +47,13 @@ tasks()
         return 1
     fi
     touch /home/endpoint/ruby-tasks.done
+    chown endpoint:endpoint /home/endpoint/ruby-tasks.done
     return 0
 }
 
 case "$1" in
--g ) tasks ;;
-* ) rvmsudo $0 -g ;;
+-t ) tasks ;;
+* ) rvmsudo $0 -t ;;
 esac
 
 exit $?
