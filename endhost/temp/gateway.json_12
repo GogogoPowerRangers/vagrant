@@ -1,0 +1,12 @@
+{
+  "GATEWAY_HOSTNAME": "gw12.proxies.na.apm.mycloudengage.com",
+  "GATEWAY_PUBLIC_UI_IP": "75.126.199.246",
+  "GATEWAY_PUBLIC_AGENT_IP": "50.97.73.142",
+  "GATEWAY_PRIVATE_IP": "10.60.87.9",
+  "GATEWAY_PRIVATE_SECONDARY_IP": "10.60.87.99",
+  "GATEWAY_DATACENTER": "Dallas 5",
+  "GATEWAY_GEO": "NA",
+  "GATEWAY_USERID": "endpoint",
+  "GATEWAY_DOMAIN_UI": "customers.na.apm.mycloudengage.com",
+  "GATEWAY_DOMAIN_AGENT": "agents.customers.na.apm.mycloudengage.com"   
+}

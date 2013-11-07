@@ -1,0 +1,356 @@
+#!/usr/bin/env ruby
+
+require 'saas_endpoint'
+require 'nokogiri'
+require 'open3'
+require 'json'
+
+#####################################################################################
+#  Utility function for checking return codes and collecting stderr if necessary
+#####################################################################################
+
+def runcmd(cmd, connection, yay, nay)
+
+  stdin, stdout, stderr, wait_thr = Open3.popen3(cmd)
+
+  connection.post_info("cmd = #{cmd.to_s}")
+  if (wait_thr.value.success?)
+    connection.post_info(yay.to_s)
+    stdin.close
+    stdout.close
+    stderr.close
+  else
+    connection.post_error(nay.to_s)
+    connection.post_error("stdout:" + stdout.read)
+    connection.post_error("stderr:" + stderr.read)
+    stdin.close
+    stdout.close
+    stderr.close
+    connection.post_failed
+    exit
+  end
+
+end
+
+#####################################################################################
+#  Establish connection, parse parameters
+#####################################################################################
+  connection = SaasEndpoint::Connection.new
+
+begin 
+
+  connection.post_info("Started #{File.basename($0)}.")
+
+  ARGV.each_with_index { |arg, i| connection.post_info("ARGV[#{i}] = #{arg}") }
+
+  subscription_request_data = SaasEndpoint::task_subscription_request_data
+  output_directory = SaasEndpoint::task_products_directory
+
+  options = {
+    subscriber_id: subscription_request_data['subscription_id'],
+    datacenter: subscription_request_data['datacenter'],
+    outputDirectory: output_directory
+  }
+
+#####################################################################################
+#  Begin of logging/sanity checking the parameters
+#####################################################################################
+
+  connection.post_info("subscriber id=#{options[:subscriber_id]}")
+  connection.post_info("datacenter=#{options[:datacenter]}")
+  connection.post_info("outputDirectory=#{options[:outputDirectory]}")
+
+# sample:
+# /home/endpoint/saas_endpoint/tmp/subscriptions/30c38c64b09c51539f490d708060bb84/attribute.json
+#
+  filename = options[:outputDirectory] + "/" + "attribute.json"
+
+#####################################################################################
+# Verify if provisioning file exists
+#####################################################################################
+  
+  cmd = "ls -l #{filename}"
+  runcmd(cmd, connection, "Provisioning file found", "Error: Provisioning file missing")
+
+#####################################################################################
+# Get the tenant IP address from the provisioning file
+#####################################################################################
+
+  subscriberHash = {}
+
+  File.open(filename.to_s,"r") do |f|
+    subscriberHash = JSON.load(f)
+  end
+
+  chef_attributes = subscriberHash["chef_attributes"]
+  tenant_ip = subscriberHash["chef_attributes"]["primaryBackendIpAddress"]
+
+  if tenant_ip.empty?
+    connection.post_error("Failed to parse tenant_ip:empty")
+    connection.post_failed
+    exit
+  elsif tenant_ip.nil?
+    connection.post_error("Failed to parse tenant_ip:nil")
+    connection.post_failed
+    exit
+  else
+    connection.post_info("Tenant_ip=#{tenant_ip}")
+  end 
+
+  connection.post_info("subscriberHash = #{subscriberHash.to_s}")
+
+  gatewayHash = {}
+
+  File.open("gateway.json","r") do |f|
+    gatewayHash = JSON.load(f)
+  end
+
+  connection.post_info("gateway = #{gatewayHash["GATEWAY_PRIVATE_IP"]}")
+
+#####################################################################################
+#  End of logging/sanity checking the parameters
+#####################################################################################
+  
+  connection.post_info("End of logging the parameters")
+
+#####################################################################################
+#  Create the httpd.conf file
+#  create tenant.conf $tenant_ID $tenant_UI_IP $tenant_agent_IP 
+#####################################################################################
+
+  working_directory = Dir.pwd
+  conf_directory = working_directory + "/conf"
+  
+  Dir.chdir(conf_directory)
+
+  sh_cmd = "#{working_directory}/create_tenant.sh" + " " + options[:subscriber_id].to_s + " " + gatewayHash["GATEWAY_PUBLIC_UI_IP"].to_s + " " + gatewayHash["GATEWAY_PUBLIC_AGENT_IP"].to_s
+  runcmd(sh_cmd, connection, "Tenant's #{options[:subscriber_id]}.conf created", "tenant.conf not created")
+
+#####################################################################################
+#  Copy conf file to gateway
+#  this scp command works, copy it
+#  scp  "/home/endpoint/apm_saas_endpoint/bin/tasks/update_proxy/tenant3.tmp" endpoint@vsgw2:"/opt/IBM/HTTPServer/conf/tenants"
+#####################################################################################
+
+  scp_cmd ="scp -o StrictHostKeyChecking=no " + "\"#{conf_directory}/" + options[:subscriber_id].to_s + ".conf\"" + " " + gatewayHash["GATEWAY_USERID"].to_s + "@" + gatewayHash["GATEWAY_HOSTNAME"].to_s + ":\"/opt/IBM/HTTPServer/conf/tenants\""
+  runcmd(scp_cmd, connection, "Tenant conf file copied to gateway", "Tenant conf not copied to gateway")
+
+#####################################################################################
+# Store copy of conf file in repository
+#####################################################################################
+
+  git_cmd = "git add #{options[:subscriber_id]}.conf"
+  runcmd(git_cmd, connection, "Git add succeeded", "Failed to add file to repository")  
+
+  git_cmd = "git commit #{options[:subscriber_id]}.conf --author='Endpoint Manager <endpoint@apmendpoint.apmaas.ibm.com>' -m \"Automated commit of #{options[:subscriber_id]}\""
+  runcmd(git_cmd, connection, "File commited to repository", "Failed to commit file to repository")
+
+  Dir.chdir(working_directory)
+
+#####################################################################################
+#####################################################################################
+#  Create the plugin-cfg.xml file
+#####################################################################################
+
+
+#############################################################
+# GIT file from repository or scp
+# scp_cmd = "scp #{gatewayHash["GATEWAY_HOSTNAME"].to_s}:/opt/IBM/WebSphere/Plugins/config/plugin-cfg.xml ."
+#############################################################
+
+  git_cmd = "git checkout -- plugin-cfg.xml"
+  runcmd(git_cmd, connection, "File plugin-cfg.xml extracted", "Failed to extract xml")
+
+#############################################################
+# Open & Parse xml
+#############################################################
+
+  doc = Nokogiri::XML((File.open("plugin-cfg.xml")),&:noblanks)
+  connection.post_info("xml file opened")
+
+#############################################################
+# Add new tenant
+#############################################################
+
+Nokogiri::XML::Builder.with(doc.at('Config')) do |xml|
+
+#ui
+  xml.VirtualHostGroup("Name"  => "#{options[:subscriber_id]}_ui_hosts"){
+     xml.VirtualHost("Name"    => "#{options[:subscriber_id]}.customers.na.apm.mycloudengage.com:443")
+  }
+
+#agent  
+  xml.VirtualHostGroup("Name"  => "#{options[:subscriber_id]}_agent_hosts"){
+     xml.VirtualHost("Name"    => "#{options[:subscriber_id]}.agents.customers.na.apm.mycloudengage.com:443")
+  }
+
+#ui
+  xml.ServerCluster("Name"     => "#{options[:subscriber_id]}_ui_ServerCluster", 
+     "CloneSeparatorChange"    => "false", 
+     "GetDWLMTable"            => "false", 
+     "IgnoreAffinityRequests"  => "true", 
+     "LoadBalance"             => "Round Robin", 
+     "PostBufferSize"          => "10000000", 
+     "PostSizeLimit"           => "-1", 
+     "RemoveSpecialHeaders"    => "true", 
+     "RetryInterval"           => "60" ) {
+     xml.Server(
+	"Name"                 => "Primary_Server", 
+        "LoadBalanceWeight"    => "20", 
+	"ConnectTimeout"       => "0", 
+	"ExtendedHandshake"    => "false", 
+	"MaxConnections"       => "-1", 
+	"ServerIOTimeout"      => "900", 
+	"WaitForContinue"      => "false" ) {
+        xml.Transport(
+	   "Hostname"          => "#{tenant_ip}", 
+	   "Port"              => "80", 
+	   "Protocol"          => "http" ) 
+     }
+
+     xml.Server(
+	"Name"                 => "Secondary_Server", 
+        "LoadBalanceWeight"    => "0", 
+	"ConnectTimeout"       => "0", 
+	"ExtendedHandshake"    => "false", 
+
+	"MaxConnections"       => "-1", 
+	"ServerIOTimeout"      => "900", 
+	"WaitForContinue"      => "false" ) {
+        xml.Transport(
+	   "Hostname"          => "#{gatewayHash["GATEWAY_PRIVATE_SECONDARY_IP"]}", 
+	   "Port"              => "80", 
+	   "Protocol"          => "http" ) 
+     }
+
+     xml.PrimaryServers{
+        xml.Server("Name"      => "Primary_Server")
+        xml.Server("Name"      => "Secondary_Server")
+     }
+  } 
+
+# agent
+  xml.ServerCluster("Name"     => "#{options[:subscriber_id]}_agent_ServerCluster", 
+     "CloneSeparatorChange"    => "false",
+     "GetDWLMTable"            => "false", 
+     "IgnoreAffinityRequests"  => "true", 
+     "LoadBalance"             => "Round Robin", 
+     "PostBufferSize"          => "10000000", 
+     "PostSizeLimit"           => "-1", 
+     "RemoveSpecialHeaders"    => "true", 
+     "RetryInterval"           => "60") {
+     xml.Server(
+	"Name"                 => "Primary_Server", 
+        "LoadBalanceWeight"    => "20", 
+	"ConnectTimeout"       => "0", 
+	"ExtendedHandshake"    => "false", 
+	"MaxConnections"       => "-1", 
+	"ServerIOTimeout"      => "900", 
+	"WaitForContinue"      => "false" ) {
+        xml.Transport(
+	   "Hostname"          => "#{tenant_ip}", 
+	   "Port"              => "80", 
+	   "Protocol"          => "http" )
+     }
+     xml.Server(
+	"Name"                 => "Secondary_Server", 
+        "LoadBalanceWeight"    => "0", 
+	"ConnectTimeout"       => "0", 
+	"ExtendedHandshake"    => "false", 
+	"MaxConnections"       => "-1", 
+	"ServerIOTimeout"      => "900", 
+	"WaitForContinue"      => "false" ) {
+        xml.Transport(
+	   "Hostname"          => "#{gatewayHash["GATEWAY_PRIVATE_SECONDARY_IP"]}", 
+	   "Port"              => "80", 
+	   "Protocol"          => "http" )
+     }
+
+     xml.PrimaryServers{
+        xml.Server("Name"      => "Primary_Server")
+        xml.Server("Name"      => "Secondary_Server")
+     }
+  } 
+  
+  xml.Route(
+     "ServerCluster"           => "#{options[:subscriber_id]}_ui_ServerCluster",
+     "UriGroup"                => "APM_URIs",
+     "VirtualHostGroup"        => "#{options[:subscriber_id]}_ui_hosts" )
+  
+  xml.Route(
+     "ServerCluster"           => "#{options[:subscriber_id]}_agent_ServerCluster",
+     "UriGroup"                => "Agent_URIs", 
+     "VirtualHostGroup"        => "#{options[:subscriber_id]}_agent_hosts")
+  
+end                     
+
+  connection.post_info("xml file modified in memory")
+
+#############################################################
+# Write the file
+#############################################################
+
+  File.open('plugin-cfg.xml','w') {|f| doc.write_xml_to f}
+  connection.post_info("xml file written to disk")
+
+#############################################################
+# Update GIT
+#############################################################
+
+  git_cmd = "git add plugin-cfg.xml"
+  runcmd(git_cmd, connection, "Git add succeeded", "Failed to add xml to repository")
+
+  git_cmd = "git commit plugin-cfg.xml --author='Endpoint Manager <endpoint@apmendpoint.apmaas.ibm.com>' -m \"Automated commit of #{options[:subscriber_id]}\""
+  runcmd(git_cmd, connection, "File commited to repository", "Failed to commit file to repository")
+
+#####################################################################################
+# xml complete
+#####################################################################################
+#####################################################################################
+
+
+#####################################################################################
+# Have chef update the gateway or scp
+#####################################################################################
+
+  scp_cmd = "scp -o StrictHostKeyChecking=no plugin-cfg.xml #{gatewayHash["GATEWAY_HOSTNAME"].to_s}:/opt/IBM/WebSphere/Plugins/config/plugin-cfg.xml"
+  runcmd(scp_cmd, connection, "Plugin xml file copied to gateway", "Failed to copy xml file")
+
+#####################################################################################
+#  Gracefully restart the gateway
+#
+# this example works
+# ssh -t endpoint@vsgw2 sudo '/opt/IBM/HTTPServer/bin/apachectl graceful'
+#
+#####################################################################################
+
+  graceful_restart = "ssh -o StrictHostKeyChecking=no -t " + gatewayHash["GATEWAY_USERID"].to_s + "@" + gatewayHash["GATEWAY_HOSTNAME"].to_s + " " + "sudo '/opt/IBM/HTTPServer/bin/apachectl graceful'"
+  runcmd(graceful_restart, connection, "Graceful restart requested", "Graceful restart request failed")
+
+#####################################################################################
+#  Post complete
+#####################################################################################
+
+  connection.post_info("Done now. Posting complete.")
+  connection.post_complete
+
+
+#####################################################################################
+#
+# Exception handler
+#
+# rescue "Exeption" swallows ctr-c and signals so using lesser scope "StandardError"
+# 
+#####################################################################################
+
+rescue StandardError => e
+   connection.post_error("Failed: #{e.message}")
+   connection.post_failed
+end
+
+
+
+
+
+
+
