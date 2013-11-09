@@ -1,0 +1,38 @@
+#
+# Copyright 2013 Dean Okamura
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+RESTClient
+
+Authentication: Basic prachi/password
+
+Content-Type: application/json; charset=utf-8
+
+Accept: application/json
+
+Body
+{
+    "callbackURL":"https://localhost:5000/api/v1callback",
+    "requestorEmail":"spongebob@us.ibm.com",
+    "subscriptionID":"107a655e7bdc53625b1e9c77b240a3bb",
+    "subscriptionType":"trial"
+}
+
+HTTP Status
+
+204 Success
+422 Any error; Duplicate
+
+

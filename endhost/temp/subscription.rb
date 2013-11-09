@@ -13,11 +13,10 @@ require 'net/http'
 require 'securerandom'
 require 'json'
 
-
 def request_payload
   {
     'callbackURL' => 'https://localhost:5000/api/v1/callback',
-    'requestorEmail' => 'user@us.ibm.com',
+    'requestorEmail' => "#{ENV['LOGNAME'] || 'user'}@us.ibm.com",
     'subscriptionID' => SecureRandom.hex,
     'subscriptionType' => 'trial'
   }
@@ -27,7 +26,8 @@ end
 ##
 # Sends an HTTP POST to the instance's callback URL with the appropriate completion payload.
 def post_request
-  uri = URI('https://10.80.64.194:3000/api/v1/subscription')
+  # uri = URI('https://10.80.64.194:3000/api/v1/subscription')
+  uri = URI('http://localhost:3000/api/v1/subscription')
   
   http_client = Net::HTTP.new(uri.host, uri.port)
   http_client.use_ssl = uri.scheme.downcase == 'https' 
@@ -38,6 +38,7 @@ def post_request
   request.basic_auth("prachi", "password")  
   request['Content-Type'] = 'application/json; charset=utf-8'
   request.body = request_payload.to_json
+  puts "INFO: subscriptionID #{request_payload['subscriptionID']}"
   
   begin
     response = http_client.start { |client| client.request(request) }
