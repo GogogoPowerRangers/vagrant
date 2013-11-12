@@ -27,7 +27,7 @@ end
 # Sends an HTTP POST to the instance's callback URL with the appropriate completion payload.
 def post_request
   # uri = URI('https://10.80.64.194:3000/api/v1/subscription')
-  uri = URI('http://localhost:3000/api/v1/subscription')
+  uri = URI('https://localhost:3000/api/v1/subscription')
   
   http_client = Net::HTTP.new(uri.host, uri.port)
   http_client.use_ssl = uri.scheme.downcase == 'https' 
