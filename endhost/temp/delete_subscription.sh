@@ -29,8 +29,8 @@ if [ "$1" = "" -o "$2" = "" ] ; then
 fi
 
 case "$1" in
--i ) curl -v -X DELETE --user prachi:password -k https://iguacu:3000/api/v1/subscriptions/$2 ;;
--s ) curl -v -X DELETE --user prachi:password -k https://iguacu:3000/api/v1/subscription?subscriptionID=$2 ;;
+-i ) curl -v -X DELETE --user prachi:password -k https://localhost:3000/api/v1/subscriptions/$2 ;;
+-s ) curl -v -X DELETE --user prachi:password -k https://localhost:3000/api/v1/subscription?subscriptionID=$2 ;;
 * ) usage; exit 1 ;;
 esac
 
