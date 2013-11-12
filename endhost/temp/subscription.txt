@@ -30,6 +30,8 @@ Body
     "subscriptionType":"trial"
 }
 
+Remember to change Body "subscriptionID" for each REST POST.
+
 HTTP Status
 
 204 Success
