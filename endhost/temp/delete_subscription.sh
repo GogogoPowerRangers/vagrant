@@ -17,7 +17,7 @@
 
 usage()
 {
-    echo "Usage: $0 -i id"
+    echo "Usage: $0 -d id"
     echo "       id is database id"
     echo "Usage: $0 -s sid"
     echo "       sid is subscription id"
@@ -28,10 +28,17 @@ if [ "$1" = "" -o "$2" = "" ] ; then
     exit 1
 fi
 
+USER=prachi
+PASSWORD=password
+CURL_OPTS="-v -H 'Accept: application/json' --user $USER:$PASSWORD -k"
+LOG=$(basename $0 | sed -e 's#\.sh$##')$1.log
+
 case "$1" in
--i ) curl -v -X DELETE --user prachi:password -k https://localhost:3000/api/v1/subscriptions/$2 ;;
--s ) curl -v -X DELETE --user prachi:password -k https://localhost:3000/api/v1/subscription?subscriptionID=$2 ;;
+-d ) curl -X DELETE $CURL_OPTS http://localhost:3000/api/v1/subscriptions/$2 > $LOG ;;
+-s ) curl $CURL_OPTS http://localhost:3000/api/v1/subscriptions/$2/searches > $LOG; echo "" >> $LOG ;;
 * ) usage; exit 1 ;;
 esac
+
+echo "Results in $LOG"
 
 #

@@ -5,6 +5,7 @@ boxes.backup/*
 .DS_Store
 *.box
 *.gz
+*.log
 *.rpm
 *.tar
 *.zip
