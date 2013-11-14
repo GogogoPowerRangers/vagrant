@@ -34,8 +34,8 @@ CURL_OPTS="-v -H 'Accept: application/json' --user $USER:$PASSWORD -k"
 LOG=$(basename $0 | sed -e 's#\.sh$##')$1.log
 
 case "$1" in
--d ) curl -X DELETE $CURL_OPTS http://localhost:3000/api/v1/subscriptions/$2 > $LOG ;;
--s ) curl $CURL_OPTS http://localhost:3000/api/v1/subscriptions/$2/searches > $LOG; echo "" >> $LOG ;;
+-d ) curl -X DELETE $CURL_OPTS https://localhost:3000/api/v1/subscriptions/$2/searches/1 > $LOG ;;
+-s ) curl $CURL_OPTS https://localhost:3000/api/v1/subscriptions/$2/searches > $LOG; echo "" >> $LOG ;;
 * ) usage; exit 1 ;;
 esac
 
