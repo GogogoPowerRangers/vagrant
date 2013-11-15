@@ -1,0 +1,26 @@
+##
+# Install more packages to speed up APM Software as a Service Endpoint Controller provisioning development
+#
+# Login as vagrant. Veewee will probably list the command as:
+#
+#     sudo yum groupinstall -y "Development Tools"
+#     sudo yum install -y unzip rsync ruby-devel zip
+#     sudo yum install -y sqlite-devel java-1.7.0-openjdk
+#
+# EPEL repository:
+#
+#     mkdir /home/vagrant/temp
+#     cd /home/vagrant/temp
+#     wget http://mirrors.cat.pdx.edu/epel/6/i386/epel-release-6-8.noarch.rpm
+#     sudo yum install -y epel-release-6-8.noarch.rpm 
+#     sudo yum install nginx nodejs
+#
+# You can run the following update but it may never complete successfully:
+#
+#     sudo yum update
+#
+# Cleanup and exit
+#
+#     sudo ./cleanup.sh
+#     sudo ./zerodisk.sh
+#

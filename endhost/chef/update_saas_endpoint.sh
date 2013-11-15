@@ -42,8 +42,8 @@ tasks()
         echo "You may need to remove and install endpoint controller"
         return 1
     fi
-    echo "Update /home/endpoint/saas_endpoint using /var/chef/cache/saas_endpoint.zip"
-    unzip -qo /var/chef/cache/saas_endpoint.zip
+    echo "Update /home/endpoint/saas_endpoint using /tmp/vagrant-chef-1/chef-solo-1/cookbooks/saasendpoint/files/default/saas_endpoint.zip"
+    unzip -qo /tmp/vagrant-chef-1/chef-solo-1/cookbooks/saasendpoint/files/default/saas_endpoint.zip
     cd /home/endpoint/saas_endpoint
     rake db:migrate
     tar -zxvf /vagrant/chef/db-development.sqlite3.tar.gz
