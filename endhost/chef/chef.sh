@@ -38,7 +38,11 @@ if [ ! "$1" = "" ] ; then
 fi
 case "$RECIPE" in
 bare|dev ) sudo chef-solo -j $RECIPE.json -c solo.rb ;;
-* ) sudo chef-solo -j default.json -c solo.rb ;;
+* ) if [ -f /usr/local/bin/rvm ] ; then
+        rvmsudo chef-solo -j default.json -c solo.rb
+    else
+        sudo chef-solo -j default.json -c solo.rb
+    fi ;;
 esac
 
 #
