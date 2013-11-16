@@ -43,11 +43,9 @@ def create_payload
 }
 end
 
-def update_payload
+def patch_payload
 {
-  'callbackURL' => 'https://localhost:5000/api/v1/callback',
   'requestorEmail' => "#{ENV['LOGNAME'] || 'user'}@us.ibm.com",
-  'subscriptionID' => SecureRandom.hex,
   'subscriptionType' => 'trial'
 }
 end
@@ -68,11 +66,15 @@ def http_request(verb, uri, payload=nil)
     request = Net::HTTP::Get.new(uri)
   when SAAS_ENDPOINT_POST
     request = Net::HTTP::Post.new(uri)
-    request.body = payload.to_json
+  when SAAS_ENDPOINT_PATCH
+    request = Net::HTTP::Patch.new(uri)
+  when SAAS_ENDPOINT_PUT
+    request = Net::HTTP::Put.new(uri)
   end
   request.basic_auth("#{SAAS_ENDPOINT_USER}", "#{SAAS_ENDPOINT_PASSWORD}")  
   request['Content-Type'] = 'application/json; charset=utf-8'
   request['Accept'] = 'application/json'
+  request.body = payload.to_json if payload
   
   begin
     response = http_client.start { |client| client.request(request) }
@@ -97,6 +99,10 @@ when '-d'
   uri = URI("#{SAAS_ENDPOINT_SCHEME}://localhost:3000/api/v1/subscriptions/#{ARGV[1]}/searches/1")
   puts("INFO: uri #{uri}")
   http_request(SAAS_ENDPOINT_DELETE, uri)
+when '-p'
+  uri = URI("#{SAAS_ENDPOINT_SCHEME}://localhost:3000/api/v1/subscriptions/#{ARGV[1]}/searches/1")
+  puts("INFO: uri #{uri}")
+  http_request(SAAS_ENDPOINT_PATCH, uri, patch_payload)
 when '-s'
   uri = URI("#{SAAS_ENDPOINT_SCHEME}://localhost:3000/api/v1/subscriptions/#{ARGV[1]}/searches")
   puts("INFO: uri #{uri}")
