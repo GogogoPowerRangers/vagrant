@@ -16,6 +16,7 @@ require 'json'
 SAAS_ENDPOINT_SCHEME = ENV['SAAS_ENDPOINT_SCHEME'] || 'https'
 SAAS_ENDPOINT_USER = ENV['SAAS_ENDPOINT_USER'] || 'prachi'
 SAAS_ENDPOINT_PASSWORD = ENV['SAAS_ENDPOINT_PASSWORD'] || 'password'
+SAAS_ENDPOINT_ENAIL = ENV['SAAS_ENDPOINT_EMAIL'] || 'user@us.ibm.com'
 
 SAAS_ENDPOINT_DELETE = 1
 SAAS_ENDPOINT_GET = 2
@@ -37,7 +38,7 @@ end
 def create_payload
 {
   'callbackURL' => 'https://localhost:5000/api/v1/callback',
-  'requestorEmail' => "#{ENV['LOGNAME'] || 'user'}@us.ibm.com",
+  'requestorEmail' => SAAS_ENDPOINT_EMAIL,
   'subscriptionID' => SecureRandom.hex,
   'subscriptionType' => 'trial'
 }
@@ -45,7 +46,7 @@ end
 
 def patch_payload
 {
-  'requestorEmail' => "#{ENV['LOGNAME'] || 'user'}@us.ibm.com",
+  'requestorEmail' => SAAS_ENDPOINT_EMAIL,
   'subscriptionType' => 'trial'
 }
 end
