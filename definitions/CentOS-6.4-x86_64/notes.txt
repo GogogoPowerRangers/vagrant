@@ -1,0 +1,14 @@
+##
+# Install more packages to speed up APM Software as a Service Endpoint Controller provisioning development
+#
+
+# veewee build
+# veewee vbox build CentOS-6.4-x86_64
+
+# Login in and check for /usr/bin/nginx and /usr/bin/node
+# ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p 7222 -l veewee 127.0.0.1
+# You may need to install APM as a service, EPEL repository, nginx and node.js
+# See base.sh for commands
+
+# Create Vagrant box
+# vagrant package --base CentOS-6.4-x86_64 --output ~/vagrant/boxes/CentOS-6.4-x86_64-apmaas.box
