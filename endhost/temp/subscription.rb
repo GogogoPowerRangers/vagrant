@@ -16,7 +16,10 @@ require 'json'
 SAAS_ENDPOINT_SCHEME = ENV['SAAS_ENDPOINT_SCHEME'] || 'https'
 SAAS_ENDPOINT_USER = ENV['SAAS_ENDPOINT_USER'] || 'prachi'
 SAAS_ENDPOINT_PASSWORD = ENV['SAAS_ENDPOINT_PASSWORD'] || 'password'
-SAAS_ENDPOINT_ENAIL = ENV['SAAS_ENDPOINT_EMAIL'] || 'user@us.ibm.com'
+
+SUBSCRIPTION_CALLBACK = ENV['SUBSCRIPTION_CALLBACK'] || 'https://localhost:5000/api/v1/callback'
+SUBSCRIPTION_EMAIL = ENV['SUBSCRIPTION_EMAIL'] || 'user@us.ibm.com'
+SUBSCRIPTION_TYPE = ENV['SUBSCRIPTION_TYPE'] || 'trial'
 
 SAAS_ENDPOINT_DELETE = 1
 SAAS_ENDPOINT_GET = 2
@@ -36,19 +39,20 @@ def usage()
 end
 
 def create_payload
-{
-  'callbackURL' => 'https://localhost:5000/api/v1/callback',
-  'requestorEmail' => SAAS_ENDPOINT_EMAIL,
-  'subscriptionID' => SecureRandom.hex,
-  'subscriptionType' => 'trial'
-}
+  {
+    'callbackURL' => SUBSCRIPTION_CALLBACK,
+    'requestorEmail' => SUBSCRIPTION_EMAIL,
+    'subscriptionID' => SecureRandom.hex,
+    'subscriptionType' => SUBSCRIPTION_TYPE
+  }
 end
 
 def patch_payload
-{
-  'requestorEmail' => SAAS_ENDPOINT_EMAIL,
-  'subscriptionType' => 'trial'
-}
+  {
+    'callbackURL' => SUBSCRIPTION_CALLBACK,
+    'requestorEmail' => SUBSCRIPTION_EMAIL,
+    'subscriptionType' => SUBSCRIPTION_TYPE
+  }
 end
 
 
