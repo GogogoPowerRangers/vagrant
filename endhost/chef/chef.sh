@@ -19,6 +19,9 @@
 if [ ! -d /tmp/vagrant-chef-1/chef-solo-1 ] ; then
     mkdir -p /tmp/vagrant-chef-1/chef-solo-1
 fi
+if [ ! -d /tmp/vagrant-chef-1/chef-solo-2 ] ; then
+    mkdir -p /tmp/vagrant-chef-1/chef-solo-2
+fi
 # cookbook_path
 if [ ! -d /tmp/vagrant-chef-1/chef-solo-1/cookbooks -a \
      ! -L /tmp/vagrant-chef-1/chef-solo-1/cookbooks -a \
@@ -26,9 +29,9 @@ if [ ! -d /tmp/vagrant-chef-1/chef-solo-1/cookbooks -a \
    ln -sf $HOME/cookbooks /tmp/vagrant-chef-1/chef-solo-1/cookbooks
 fi
 if [ ! -d /tmp/vagrant-chef-1/chef-solo-2/cookbooks -a \
-     ! -L /tmp/vagrant-chef-1/chef-solo-1/cookbooks -a \
+     ! -L /tmp/vagrant-chef-1/chef-solo-2/cookbooks -a \
      -d $HOME/cookbooks ] ; then
-   ln -sf $HOME/cookbooks /tmp/vagrant-chef-1/chef-solo-2/cookbooks
+   ln -sf $HOME/apmaas/endpoint/cookbooks /tmp/vagrant-chef-1/chef-solo-2/cookbooks
 fi
 
 # Vagrant usually runs Chef as root
