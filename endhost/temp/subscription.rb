@@ -30,12 +30,14 @@ SAAS_ENDPOINT_PUT = 5
 def usage()
   puts("Usage: #{$PROGRAM_NAME} -c")
   puts("       Creates subscription")
-  puts("Usage: #{$PROGRAM_NAME} -d id")
-  puts("       id is database id")
+  puts("Usage: #{$PROGRAM_NAME} -d sid")
+  puts("       sid is subscription id")
   puts("       Deletes subscription")
   puts("Usage: #{$PROGRAM_NAME} -s sid")
   puts("       sid is subscription id")
   puts("       Searches for subscription")
+  puts("Usage: #{$PROGRAM_NAME} -z id")
+  puts("       id is database id")
 end
 
 def create_payload
@@ -112,6 +114,10 @@ when '-s'
   uri = URI("#{SAAS_ENDPOINT_SCHEME}://localhost:3000/api/v1/subscriptions/#{ARGV[1]}/searches")
   puts("INFO: uri #{uri}")
   http_request(SAAS_ENDPOINT_GET, uri)
+when '-z'
+  uri = URI("#{SAAS_ENDPOINT_SCHEME}://localhost:3000/api/v1/subscriptions/#{ARGV[1]}")
+  puts("INFO: uri #{uri}")
+  http_request(SAAS_ENDPOINT_DELETE, uri)
 else
   usage
   exit(1)
